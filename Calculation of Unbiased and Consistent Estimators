@@ -1,0 +1,46 @@
+import numpy as np
+
+# 不偏推定量と一致推定量の計算 / Calculation of Unbiased and Consistent Estimators
+
+def unbiased_estimator(sample):
+    """
+    不偏推定量の計算 / Calculation of unbiased estimator
+    sample: 標本データ / Sample data
+    
+    returns: 不偏平均と不偏分散 / Unbiased mean and unbiased variance
+    """
+    n = len(sample)  # 標本サイズ / Sample size
+    mean_unbiased = np.mean(sample)  # 不偏平均は標本平均と同じ / Unbiased mean (same as sample mean)
+    variance_unbiased = np.var(sample, ddof=1)  # 不偏分散は Bessel 補正を使用 / Unbiased variance with Bessel's correction
+    
+    return mean_unbiased, variance_unbiased
+
+def consistent_estimator(sample):
+    """
+    一致推定量の計算 / Calculation of consistent estimator
+    sample: 標本データ / Sample data
+    
+    returns: 一致平均と一致分散 / Consistent mean and consistent variance
+    """
+    n = len(sample)  # 標本サイズ / Sample size
+    mean_consistent = np.mean(sample)  # 一致平均は標本平均と同じ / Consistent mean (same as sample mean)
+    variance_consistent = np.var(sample, ddof=0)  # 一致分散は補正なし / Consistent variance (no correction)
+    
+    return mean_consistent, variance_consistent
+
+# サンプルデータの生成 / Generate sample data
+np.random.seed(0)  # 乱数シードを固定 / Fix the random seed
+sample_data = np.random.normal(loc=50, scale=10, size=30)  # 平均50、標準偏差10の正規分布から標本を生成 / Generate samples from normal distribution
+
+# 不偏推定量の計算 / Calculate unbiased estimator
+mean_unbiased, variance_unbiased = unbiased_estimator(sample_data)
+print(f"不偏平均: {mean_unbiased:.4f}, 不偏分散: {variance_unbiased:.4f}")
+
+# 一致推定量の計算 / Calculate consistent estimator
+mean_consistent, variance_consistent = consistent_estimator(sample_data)
+print(f"一致平均: {mean_consistent:.4f}, 一致分散: {variance_consistent:.4f}")
+
+# 結果を比較 / Compare results
+print("\n不偏推定量と一致推定量の比較 / Comparison of unbiased and consistent estimators:")
+print(f"不偏平均 vs 一致平均: {mean_unbiased:.4f} vs {mean_consistent:.4f}")
+print(f"不偏分散 vs 一致分散: {variance_unbiased:.4f} vs {variance_consistent:.4f}")
