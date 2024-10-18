@@ -1,0 +1,41 @@
+import scipy.stats as stats
+import numpy as np
+
+# 信頼度推定の関数 / Function to estimate reliability and failure probability
+def estimate_reliability(r, n, alpha=0.05):
+    """
+    ノンパラメトリックな信頼度推定 / Non-parametric reliability estimation
+    
+    r: 試験中に発生した故障数 / Number of failures during the test
+    n: 試験された製品の総数 / Total number of products tested
+    alpha: 信頼水準（デフォルトは 0.05）/ Confidence level (default is 0.05)
+    
+    returns: 信頼度推定値 R_hat(t) と累積故障率 F_hat(t) / Estimated reliability R_hat(t) and cumulative failure probability F_hat(t)
+    """
+    
+    # パラメータ計算 / Parameter calculations
+    v1 = 2 * n - 2 * r  # v1の計算
+    v2 = 2 * r + 2  # v2の計算
+    
+    # Fa: F分布の上側αパーセント点 / F-distribution critical value
+    Fa = stats.f.ppf(1 - alpha, v1, v2)
+    
+    # 信頼度推定値 R_hat(t) の計算 / Estimate R_hat(t)
+    R_hat = 1 / (1 + (r + 1) / (n - r) * Fa)
+    
+    # 累積故障率 F_hat(t) の計算 / Estimate F_hat(t)
+    F_hat = 1 - R_hat
+    
+    return R_hat, F_hat
+
+# 信頼度推定のサンプル実行 / Sample execution for reliability estimation
+r = 5  # 故障した数 / Number of failures
+n = 20  # テストされた製品数 / Number of products tested
+alpha = 0.05  # 信頼水準 / Confidence level
+
+# 信頼度と累積故障率の推定 / Estimate reliability and failure probability
+R_hat, F_hat = estimate_reliability(r, n, alpha)
+
+# 結果の表示 / Display the results
+print(f"信頼度の推定値 R_hat(t): {R_hat:.4f}")
+print(f"累積故障率 F_hat(t): {F_hat:.4f}")
