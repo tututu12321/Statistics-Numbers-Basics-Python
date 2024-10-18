@@ -1,0 +1,35 @@
+import numpy as np
+
+# 定数
+Ea = 0.8  # 活性化エネルギー (eV)
+K = 8.617e-5  # ボルツマン定数 (eV/K)
+T1 = 50 + 273  # 実使用温度 (K)
+T2 = 125 + 273  # 試験温度 (K)
+
+# 温度加速係数 AT の計算
+AT = np.exp((Ea / K) * ((1 / T1) - (1 / T2)))
+print(f"温度加速係数 AT: {AT:.2f} 倍")
+
+# 電圧加速係数 AV = 1 (問題文より)
+AV = 1
+
+# 加速係数 AF の計算
+AF = AV * AT
+print(f"加速係数 AF: {AF:.2f} 倍")
+
+# 試験デバイス数と試験時間
+device_count = 100  # デバイス数
+test_time = 2000  # 試験時間 (時間)
+
+# 総試験時間 (Component Hours) の計算
+component_hours = device_count * test_time * AF
+print(f"総試験時間 (Component Hours): {component_hours:.2e} C.H.")
+
+# 故障率 λ の計算
+alpha = 0.92  # 故障数に対応する定数
+failure_rate = alpha / component_hours
+print(f"故障率 λ: {failure_rate:.2e} (1/h)")
+
+# FIT (10^-9 hあたりの故障率) への変換
+FIT = failure_rate * 1e9
+print(f"故障率: {FIT:.0f} FIT")
