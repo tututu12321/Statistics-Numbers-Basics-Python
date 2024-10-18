@@ -1,0 +1,38 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 定数の設定 (Setting constants)
+A = 1e6  # プリエクスポネンシャル因子 (Pre-exponential factor)
+E_a = 1.0  # 活性化エネルギー (Activation energy) in eV
+k = 8.617e-5  # ボルツマン定数 (Boltzmann constant) in eV/K
+T = np.linspace(200, 600, 100)  # 温度範囲 (Temperature range) in Kelvin
+
+# 反応速度定数 K の計算 (Calculating reaction rate constant K)
+K = A * np.exp(-E_a / (k * T))
+
+# 半導体デバイスの信頼性 L の計算 (Calculating reliability L)
+L = A * np.exp(-E_a / (k * T))
+
+# プロットの設定 (Setting up the plot)
+plt.figure(figsize=(12, 6))
+
+# 反応速度定数 K をプロット (Plotting reaction rate constant K)
+plt.subplot(1, 2, 1)
+plt.plot(T, K, label='K', color='blue')
+plt.title('Reaction Rate Constant K vs Temperature', fontsize=16)  # Title in English
+plt.xlabel('Temperature (K)', fontsize=14)  # X-axis label in English
+plt.ylabel('K', fontsize=14)  # Y-axis label in English
+plt.grid()
+plt.legend()
+
+# 半導体デバイスの信頼性 L をプロット (Plotting reliability L)
+plt.subplot(1, 2, 2)
+plt.plot(T, L, label='L', color='green')
+plt.title('Reliability L vs Temperature', fontsize=16)  # Title in English
+plt.xlabel('Temperature (K)', fontsize=14)  # X-axis label in English
+plt.ylabel('Reliability', fontsize=14)  # Y-axis label in English
+plt.grid()
+plt.legend()
+
+plt.tight_layout()  # Layout adjustment
+plt.show()  # Show plot
