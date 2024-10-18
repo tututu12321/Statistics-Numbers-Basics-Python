@@ -1,0 +1,213 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import scipy.stats as stats
+from sklearn.linear_model import LinearRegression
+import math
+
+### 1. Confidence Interval
+# Calculate the confidence interval
+def confidence_interval(data, confidence=0.95):
+    n = len(data)
+    mean = np.mean(data)
+    std_err = stats.sem(data)
+    h = std_err * stats.t.ppf((1 + confidence) / 2., n-1)
+    return mean, mean - h, mean + h
+
+# Data setup
+data = np.array([10.2, 9.8, 10.0, 9.7, 10.1, 10.3, 9.9])
+mean, ci_lower, ci_upper = confidence_interval(data)
+print(f"Confidence Interval (95%): Mean = {mean:.2f}, CI = [{ci_lower:.2f}, {ci_upper:.2f}]")
+
+### 2. Hypothesis Testing
+# Hypothesis testing
+hypothesized_mean = 10.0
+t_stat, p_value = stats.ttest_1samp(data, hypothesized_mean)
+alpha = 0.05
+
+print("\nHypothesis Testing:")
+print(f"t-statistic = {t_stat:.2f}, p-value = {p_value:.2f}")
+if p_value < alpha:
+    print("Reject H₀ (Effect present)")
+else:
+    print("Fail to Reject H₀ (No effect)")
+
+### 3. Correlation and Regression Analysis
+# Calculate correlation coefficient
+data_x = np.array([1, 2, 3, 4, 5, 6, 7])
+corr_coeff = np.corrcoef(data_x, data)[0, 1]
+print(f"\nCorrelation Coefficient = {corr_coeff:.2f}")
+
+# Linear regression analysis
+model = LinearRegression()
+data_x_reshaped = data_x.reshape(-1, 1)
+model.fit(data_x_reshaped, data)
+slope = model.coef_[0]
+intercept = model.intercept_
+
+print(f"\nRegression Analysis: y = {slope:.2f}x + {intercept:.2f}")
+
+# Plotting regression line
+plt.scatter(data_x, data, color='blue', label='Data points')
+plt.plot(data_x, model.predict(data_x_reshaped), color='red', label=f'Regression Line: y = {slope:.2f}x + {intercept:.2f}')
+plt.xlabel('Independent Variable (X)')
+plt.ylabel('Dependent Variable (Y)')
+plt.legend()
+plt.grid(True)
+plt.title('Linear Regression Analysis')
+plt.show()
+
+### 4. Propagation of Uncertainty
+# Calculate propagation of uncertainty
+def propagation_of_uncertainty(u_X, u_Y, X, Y):
+    Z = X * Y  # Assuming Z = X * Y
+    partial_X = Y
+    partial_Y = X
+    u_combined = math.sqrt((partial_X * u_X)**2 + (partial_Y * u_Y)**2)
+    return Z, u_combined
+
+# Example inputs
+X = 5.0
+Y = 10.0
+u_X = 0.1
+u_Y = 0.2
+Z, u_combined = propagation_of_uncertainty(u_X, u_Y, X, Y)
+print(f"\nPropagation of Uncertainty: Z = {Z}, Combined Uncertainty = {u_combined:.2f}")
+
+### 5. Sampling
+# Sampling from data
+def sampling(data, sample_size):
+    return np.random.choice(data, sample_size, replace=False)
+
+sample_size = 3
+sample = sampling(data, sample_size)
+print(f"\nSampled Data: {sample}")
+
+# Calculate sampling error
+sample_mean = np.mean(sample)
+sampling_error = np.abs(np.mean(data) - sample_mean)
+print(f"Sampling Error: {sampling_error:.2f}")
+
+### 6. Measurement with Expanded Uncertainty
+# Parameters and Definitions
+true_value = 100.0  # True value of the measurement
+measured_values = np.array([99.8, 100.1, 99.9, 100.2, 100.0])  # Measured values
+calibration_uncertainty = 0.05  # Calibration uncertainty
+
+# Calculate measurement errors
+errors = measured_values - true_value
+
+# Evaluate standard uncertainty (Type A)
+mean_value = np.mean(measured_values)
+standard_deviation = np.std(measured_values, ddof=1)
+standard_uncertainty_type_A = standard_deviation / np.sqrt(len(measured_values))
+
+# Combine with calibration uncertainty (Type B)
+combined_uncertainty = np.sqrt(standard_uncertainty_type_A**2 + calibration_uncertainty**2)
+
+# Coverage factor and expanded uncertainty
+coverage_factor = 2  # For approximately 95% confidence level
+expanded_uncertainty = coverage_factor * combined_uncertainty
+
+# Display results
+print(f"\nTrue Value: {true_value}")
+print(f"Measured Values: {measured_values}")
+print(f"Mean Value: {mean_value}")
+print(f"Standard Uncertainty (Type A): {standard_uncertainty_type_A}")
+print(f"Combined Uncertainty: {combined_uncertainty}")
+print(f"Expanded Uncertainty: {expanded_uncertainty}")
+
+# Plotting the results
+plt.errorbar(np.arange(len(measured_values)), measured_values, yerr=expanded_uncertainty, fmt='o', label='Measurements with Uncertainty')
+plt.axhline(y=true_value, color='r', linestyle='--', label='True Value')
+plt.xlabel('Measurement Index')
+plt.ylabel('Measured Value')
+plt.title('Measurement Values with Expanded Uncertainty')
+plt.legend()
+plt.show()
+
+### 7. Resistance Measurement with Uncertainty
+# Measurement of resistance and uncertainty
+standard_resistor_value = 10000  # Standard resistor value in ohms
+measured_values = np.array([9998, 10002, 10001, 9999, 10000])  # Measured resistance values
+leakage_current_effect = 0.002  # Leakage current effect in ohms
+traceability_uncertainty = 0.05  # Traceability uncertainty
+calibration_uncertainty = 0.03  # Calibration uncertainty
+
+# Correct the measured values for leakage current
+corrected_values = measured_values - leakage_current_effect
+
+# Calculate measurement errors
+errors = corrected_values - standard_resistor_value
+
+# Evaluate standard uncertainty (Type A)
+mean_value = np.mean(corrected_values)
+standard_deviation = np.std(corrected_values, ddof=1)
+standard_uncertainty_type_A = standard_deviation / np.sqrt(len(corrected_values))
+
+# Combine with other uncertainty factors
+combined_uncertainty = np.sqrt(standard_uncertainty_type_A**2 + traceability_uncertainty**2 + calibration_uncertainty**2)
+
+# Calculate expanded uncertainty
+expanded_uncertainty = coverage_factor * combined_uncertainty
+
+# Display results
+print(f"\nStandard Resistor Value: {standard_resistor_value} ohms")
+print(f"Corrected Measured Values: {corrected_values} ohms")
+print(f"Mean Value: {mean_value} ohms")
+print(f"Standard Uncertainty (Type A): {standard_uncertainty_type_A} ohms")
+print(f"Combined Uncertainty: {combined_uncertainty} ohms")
+print(f"Expanded Uncertainty: {expanded_uncertainty} ohms")
+
+# Plotting the results
+plt.errorbar(np.arange(len(corrected_values)), corrected_values, yerr=expanded_uncertainty, fmt='o', label='Corrected Measurements with Uncertainty')
+plt.axhline(y=standard_resistor_value, color='r', linestyle='--', label='Standard Resistor Value')
+plt.xlabel('Measurement Index')
+plt.ylabel('Corrected Measured Value (ohms)')
+plt.title('Corrected Measurement Values with Expanded Uncertainty')
+plt.legend()
+plt.show()
+
+### 8. Linear Regression
+# Linear regression
+x = np.array([1, 2, 3, 4])
+y = np.array([2, 3, 5, 7])
+
+# Calculate the mean
+mean_x = np.mean(x)
+mean_y = np.mean(y)
+print(f"\nMean of x: {mean_x:.2f}")
+print(f"Mean of y: {mean_y:.2f}")
+
+# Calculate correlation coefficient
+numerator = np.sum((x - mean_x) * (y - mean_y))
+denominator = np.sqrt(np.sum((x - mean_x) ** 2)) * np.sqrt(np.sum((y - mean_y) ** 2))
+r = numerator / denominator
+print(f"Correlation Coefficient (r): {r:.2f}")
+
+# Calculate slope (beta_1)
+std_x = np.std(x, ddof=0)
+std_y = np.std(y, ddof=0)
+beta_1 = r * (std_y / std_x)
+print(f"Slope (beta_1): {beta_1:.2f}")
+
+# Calculate intercept (beta_0)
+beta_0 = mean_y - beta_1 * mean_x
+print(f"Intercept (beta_0): {beta_0:.2f}")
+
+# Create the regression line
+y_pred = beta_0 + beta_1 * x
+
+# Evaluate the model
+ss_total = np.sum((y - mean_y) ** 2)
+ss_residual = np.sum((y - y_pred) ** 2)
+r_squared = 1 - (ss_residual / ss_total)
+print(f"R-squared (R²): {r_squared:.2f}")
+
+# Plotting
+plt.scatter(x, y, color='blue', label='Data points')
+plt.plot(x, y_pred, color='red', label='Regression line')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.legend()
+plt.title('Linear Regression')
+plt.show()
