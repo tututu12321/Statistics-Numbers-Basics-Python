@@ -1,0 +1,36 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 定数の設定 (Setting constants)
+C = 1.0  # 定数 (Constant)
+Ea = 0.8  # 活性化エネルギー (Activation energy) in eV
+k = 8.617e-5  # ボルツマン定数 (Boltzmann constant) in eV/K
+RH = 85  # 相対湿度 (Relative Humidity)
+
+# 温度の設定 (Setting temperatures)
+Ta = 30 + 273.15  # 温度 Ta (°C to K)
+Tb = 85 + 273.15  # 温度 Tb (°C to K)
+
+# 寿命 L(T) の計算 (Calculating lifetime L(T))
+L_Tb = C * np.exp(Ea / (k * Tb)) * (RH - 5)  # 使用電圧を5Vと仮定
+L_Ta = C * np.exp(Ea / (k * Ta)) * (RH - 5)  # 使用電圧を5Vと仮定
+
+# 故障率の計算 (Calculating failure rate)
+gamma_H = L_Ta / L_Tb
+
+# 結果の表示 (Displaying results)
+print(f"L(T_a) = {L_Ta:.2f}")
+print(f"L(T_b) = {L_Tb:.2f}")
+print(f"故障率 γ_H = {gamma_H:.2f}")
+
+# プロットの設定 (Setting up the plot)
+plt.figure(figsize=(8, 5))
+
+# 寿命 L(T) をプロット (Plotting L(T))
+plt.bar(['L(T_a)', 'L(T_b)'], [L_Ta, L_Tb], color=['blue', 'green'])
+plt.title('Lifetime L(T) at Different Temperatures', fontsize=16)  # Title in English
+plt.ylabel('Lifetime', fontsize=14)  # Y-axis label in English
+plt.grid()
+
+plt.tight_layout()  # Layout adjustment
+plt.show()  # Show plot
