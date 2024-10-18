@@ -1,0 +1,27 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 定数の設定 (Setting constants)
+D0 = 1e-5  # 初期拡散係数 (Initial diffusion coefficient)
+Ea = 0.6  # 活性化エネルギー (Activation energy) in eV
+k = 8.617e-5  # ボルツマン定数 (Boltzmann constant) in eV/K
+
+# 温度の範囲を設定 (Setting temperature range)
+T = np.linspace(250, 350, 100)  # 温度範囲 (Temperature range in K)
+
+# 拡散係数 D の計算 (Calculating diffusion coefficient D)
+D = D0 * np.exp(-Ea / (k * T))
+
+# プロットの設定 (Setting up the plot)
+plt.figure(figsize=(10, 6))
+
+# 拡散係数 D をプロット (Plotting D)
+plt.plot(T, D, label='Diffusion Coefficient D', color='blue')
+plt.title('Diffusion Coefficient D vs Temperature', fontsize=16)  # Title in English
+plt.xlabel('Temperature (K)', fontsize=14)  # X-axis label in English
+plt.ylabel('Diffusion Coefficient (m²/s)', fontsize=14)  # Y-axis label in English
+plt.grid()
+plt.legend()
+
+plt.tight_layout()  # Layout adjustment
+plt.show()  # Show plot
