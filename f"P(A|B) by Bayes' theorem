@@ -1,0 +1,36 @@
+# 条件付き確率の計算
+def conditional_probability(p_a_and_b, p_b):
+    """
+    条件付き確率 P(A|B) = P(A ∩ B) / P(B)
+    :param p_a_and_b: AとBが同時に起こる確率 (P(A ∩ B))
+    :param p_b: Bが起こる確率 (P(B))
+    :return: P(A|B)
+    """
+    return p_a_and_b / p_b
+
+# 例: P(A ∩ B) = 0.12, P(B) = 0.3
+p_a_and_b = 0.12
+p_b = 0.3
+
+p_a_given_b = conditional_probability(p_a_and_b, p_b)
+print(f"P(A|B) = {p_a_given_b:.2f}")
+
+
+# ベイズの定理の計算
+def bayes_theorem(p_b_given_a, p_a, p_b):
+    """
+    ベイズの定理 P(A|B) = (P(B|A) * P(A)) / P(B)
+    :param p_b_given_a: Aが起きた時にBが起こる確率 (P(B|A))
+    :param p_a: Aが起こる確率 (P(A))
+    :param p_b: Bが起こる確率 (P(B))
+    :return: P(A|B)
+    """
+    return (p_b_given_a * p_a) / p_b
+
+# 例: P(B|A) = 0.8, P(A) = 0.4, P(B) = 0.5
+p_b_given_a = 0.8
+p_a = 0.4
+p_b = 0.5
+
+p_a_given_b_bayes = bayes_theorem(p_b_given_a, p_a, p_b)
+print(f"P(A|B) by Bayes' theorem = {p_a_given_b_bayes:.2f}")
