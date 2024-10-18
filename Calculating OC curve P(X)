@@ -1,0 +1,26 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import poisson
+
+# 定数の設定 (Setting constants)
+n = 100  # サンプルサイズ (Sample size)
+p = 0.1  # 不良品率 (Defective rate)
+
+# 不良品の数を0からnまでの範囲で設定 (Setting the number of defects from 0 to n)
+x = np.arange(0, n + 1)
+
+# OC曲線 P(X) の計算 (Calculating OC curve P(X))
+P_X = np.exp(-p * n) * (p * n)**x / np.array([np.math.factorial(i) for i in x])
+
+# プロットの設定 (Setting up the plot)
+plt.figure(figsize=(10, 6))
+
+# OC曲線をプロット (Plotting the OC curve)
+plt.plot(x, P_X, marker='o', linestyle='-', color='blue')
+plt.title('Operating Characteristic Curve (OC Curve)', fontsize=16)  # Title in English
+plt.xlabel('Number of Defects (x)', fontsize=14)  # X-axis label in English
+plt.ylabel('Probability P(X)', fontsize=14)  # Y-axis label in English
+plt.grid()
+
+plt.tight_layout()  # Layout adjustment
+plt.show()  # Show plot
