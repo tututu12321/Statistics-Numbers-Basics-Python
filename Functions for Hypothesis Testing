@@ -1,0 +1,119 @@
+import numpy as np
+import scipy.stats as stats
+import matplotlib.pyplot as plt
+
+# 仮説検定のための関数 / Functions for Hypothesis Testing
+
+# z検定 (z-test) 片側検定と両側検定 / Z-test for one-sided and two-sided tests
+def z_test(sample_mean, population_mean, std_dev, n, alternative='two-sided'):
+    """
+    z検定 / Z-test
+    
+    sample_mean: サンプル平均 / Sample mean
+    population_mean: 母平均 / Population mean
+    std_dev: 母標準偏差 / Population standard deviation
+    n: サンプルサイズ / Sample size
+    alternative: 'one-sided' または 'two-sided' / 'one-sided' or 'two-sided'
+    
+    returns: z値, p値 / z-value, p-value
+    """
+    z = (sample_mean - population_mean) / (std_dev / np.sqrt(n))  # z値の計算 / Calculate z-value
+    
+    if alternative == 'two-sided':
+        p_value = 2 * (1 - stats.norm.cdf(abs(z)))  # 両側検定のp値 / Two-sided p-value
+    elif alternative == 'one-sided':
+        p_value = 1 - stats.norm.cdf(z)  # 片側検定のp値 / One-sided p-value
+    
+    return z, p_value
+
+# t検定 (t-test) 片側検定と両側検定 / t-test for one-sided and two-sided tests
+def t_test(sample_mean, population_mean, sample_std, n, alternative='two-sided'):
+    """
+    t検定 / T-test
+    
+    sample_mean: サンプル平均 / Sample mean
+    population_mean: 母平均 / Population mean
+    sample_std: サンプル標準偏差 / Sample standard deviation
+    n: サンプルサイズ / Sample size
+    alternative: 'one-sided' または 'two-sided' / 'one-sided' or 'two-sided'
+    
+    returns: t値, p値 / t-value, p-value
+    """
+    t = (sample_mean - population_mean) / (sample_std / np.sqrt(n))  # t値の計算 / Calculate t-value
+    df = n - 1  # 自由度 / Degrees of freedom
+    
+    if alternative == 'two-sided':
+        p_value = 2 * (1 - stats.t.cdf(abs(t), df))  # 両側検定のp値 / Two-sided p-value
+    elif alternative == 'one-sided':
+        p_value = 1 - stats.t.cdf(t, df)  # 片側検定のp値 / One-sided p-value
+    
+    return t, p_value
+
+# F検定 (F-test) / F-test for variance comparison
+def f_test(var1, var2, n1, n2):
+    """
+    F検定 / F-test
+    
+    var1: グループ1の分散 / Variance of group 1
+    var2: グループ2の分散 / Variance of group 2
+    n1: グループ1のサンプルサイズ / Sample size of group 1
+    n2: グループ2のサンプルサイズ / Sample size of group 2
+    
+    returns: F値, p値 / F-value, p-value
+    """
+    F = var1 / var2  # F値の計算 / Calculate F-value
+    df1, df2 = n1 - 1, n2 - 1  # 自由度 / Degrees of freedom
+    p_value = 1 - stats.f.cdf(F, df1, df2)  # p値の計算 / Calculate p-value
+    
+    return F, p_value
+
+# カイ二乗検定 (Chi-square test) / Chi-square test for goodness of fit
+def chi_square_test(observed, expected):
+    """
+    カイ二乗検定 / Chi-square test
+    
+    observed: 観測されたデータ / Observed data
+    expected: 期待されるデータ / Expected data
+    
+    returns: カイ二乗値, p値 / Chi-square value, p-value
+    """
+    chi2 = np.sum((observed - expected)**2 / expected)  # カイ二乗値の計算 / Calculate chi-square value
+    df = len(observed) - 1  # 自由度 / Degrees of freedom
+    p_value = 1 - stats.chi2.cdf(chi2, df)  # p値の計算 / Calculate p-value
+    
+    return chi2, p_value
+
+# p値の解釈 / Interpreting the p-value
+def interpret_p_value(p_value, alpha=0.05):
+    """
+    p値の解釈 / Interpret the p-value
+    
+    p_value: 計算されたp値 / Calculated p-value
+    alpha: 有意水準（デフォルトは 0.05） / Significance level (default is 0.05)
+    
+    returns: 結果の解釈 / Interpretation of result
+    """
+    if p_value < alpha:
+        return "帰無仮説を棄却します。統計的に有意な結果です。"  # Reject null hypothesis. Statistically significant.
+    else:
+        return "帰無仮説を棄却できません。統計的に有意ではありません。"  # Fail to reject null hypothesis. Not statistically significant.
+
+# サンプル実行例 / Example execution
+
+# z検定のサンプル実行 / Example for Z-test
+z_value, z_p_value = z_test(sample_mean=50, population_mean=55, std_dev=10, n=30, alternative='two-sided')
+print(f"z値: {z_value:.4f}, p値: {z_p_value:.4f}, 結果: {interpret_p_value(z_p_value)}")
+
+# t検定のサンプル実行 / Example for T-test
+t_value, t_p_value = t_test(sample_mean=50, population_mean=55, sample_std=12, n=30, alternative='two-sided')
+print(f"t値: {t_value:.4f}, p値: {t_p_value:.4f}, 結果: {interpret_p_value(t_p_value)}")
+
+# F検定のサンプル実行 / Example for F-test
+f_value, f_p_value = f_test(var1=25, var2=20, n1=30, n2=25)
+print(f"F値: {f_value:.4f}, p値: {f_p_value:.4f}, 結果: {interpret_p_value(f_p_value)}")
+
+# カイ二乗検定のサンプル実行 / Example for Chi-square test
+observed_data = np.array([50, 30, 20])
+expected_data = np.array([40, 40, 20])
+chi2_value, chi2_p_value = chi_square_test(observed_data, expected_data)
+print(f"カイ二乗値: {chi2_value:.4f}, p値: {chi2_p_value:.4f}, 結果: {interpret_p_value(chi2_p_value)}")
