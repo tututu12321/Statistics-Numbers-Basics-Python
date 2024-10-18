@@ -1,0 +1,27 @@
+import numpy as np
+import pandas as pd
+from factor_analyzer import FactorAnalyzer
+from sklearn.preprocessing import StandardScaler
+
+# ダミーデータの生成 (多変量正規分布に従うデータ)
+np.random.seed(0)
+mean = [0, 0, 0, 0]
+cov = [[1, 0.7, 0.6, 0.5], [0.7, 1, 0.6, 0.5], [0.6, 0.6, 1, 0.4], [0.5, 0.5, 0.4, 1]]  # 共分散行列
+data = np.random.multivariate_normal(mean, cov, 100)
+df = pd.DataFrame(data, columns=['Variable1', 'Variable2', 'Variable3', 'Variable4'])
+
+# データの標準化
+scaler = StandardScaler()
+df_standardized = scaler.fit_transform(df)
+
+# 因子分析の実行
+fa = FactorAnalyzer(n_factors=2, rotation='varimax')
+fa.fit(df_standardized)
+
+# 因子負荷量の出力
+factor_loadings = fa.loadings_
+print("因子負荷量: \n", factor_loadings)
+
+# 因子負荷量をデータフレームとして表示
+fa_loadings_df = pd.DataFrame(factor_loadings, index=df.columns, columns=['Factor1', 'Factor2'])
+print("\n因子負荷量 (Factor Loadings):\n", fa_loadings_df)
