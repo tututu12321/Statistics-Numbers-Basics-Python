@@ -1,0 +1,28 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 定数の設定 (Setting constants)
+A = 1e6  # 定数 (Constant)
+Ea = 0.6  # 活性化エネルギー (Activation energy) in eV
+k = 8.617e-5  # ボルツマン定数 (Boltzmann constant) in eV/K
+beta = 1.0  # 電界強度係数 (Field strength coefficient)
+
+# 温度の範囲を設定 (Setting temperature range)
+T = np.linspace(273.15, 373.15, 100)  # 温度範囲 (Temperature range in K)
+
+# MTTF の計算 (Calculating MTTF)
+MTTF = A * np.exp(-beta * 5) * np.exp(Ea / (k * T))  # Eを仮定して計算 (Assuming electric field strength E)
+
+# プロットの設定 (Setting up the plot)
+plt.figure(figsize=(10, 6))
+
+# MTTF をプロット (Plotting MTTF)
+plt.plot(T, MTTF, label='MTTF', color='blue')
+plt.title('Mean Time To Failure (MTTF) vs Temperature', fontsize=16)  # Title in English
+plt.xlabel('Temperature (K)', fontsize=14)  # X-axis label in English
+plt.ylabel('MTTF (h)', fontsize=14)  # Y-axis label in English
+plt.grid()
+plt.legend()
+
+plt.tight_layout()  # Layout adjustment
+plt.show()  # Show plot
