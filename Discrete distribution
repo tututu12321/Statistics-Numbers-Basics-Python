@@ -1,0 +1,114 @@
+import numpy as np
+import scipy.stats as stats
+import matplotlib.pyplot as plt
+
+# 幾何分布 (Geometric Distribution) - 故障密度関数、信頼度、故障率、平均寿命
+def geometric_distribution(p):
+    """幾何分布の関数 / Geometric distribution functions"""
+    t = np.arange(1, 21)  # 時間の範囲 / Time range (1, 2, ..., 20)
+    
+    # 故障密度関数 / Failure density function (PMF)
+    f_t = stats.geom.pmf(t, p)
+    
+    # 信頼度関数 / Reliability function
+    R_t = stats.geom.sf(t, p)
+    
+    # 故障率 / Failure rate
+    h_t = f_t / (R_t + f_t)
+    
+    # 平均寿命 / Mean life
+    mean_life = 1 / p
+    
+    return t, f_t, R_t, h_t, mean_life
+
+# 負の二項分布 (Negative Binomial Distribution) - 故障密度関数、信頼度、故障率、平均寿命
+def negative_binomial_distribution(r, p):
+    """負の二項分布の関数 / Negative binomial distribution functions"""
+    t = np.arange(1, 21)  # 時間の範囲 / Time range (1, 2, ..., 20)
+    
+    # 故障密度関数 / Failure density function (PMF)
+    f_t = stats.nbinom.pmf(t, r, p)
+    
+    # 信頼度関数 / Reliability function
+    R_t = stats.nbinom.sf(t, r, p)
+    
+    # 故障率 / Failure rate
+    h_t = f_t / (R_t + f_t)
+    
+    # 平均寿命 / Mean life
+    mean_life = r * (1 - p) / p
+    
+    return t, f_t, R_t, h_t, mean_life
+
+# ポアソン分布 (Poisson Distribution) - 故障密度関数、信頼度、故障率、平均寿命
+def poisson_distribution(lmbda):
+    """ポアソン分布の関数 / Poisson distribution functions"""
+    t = np.arange(0, 21)  # 時間の範囲 / Time range (0, 1, 2, ..., 20)
+    
+    # 故障密度関数 / Failure density function (PMF)
+    f_t = stats.poisson.pmf(t, lmbda)
+    
+    # 信頼度関数 / Reliability function
+    R_t = stats.poisson.sf(t, lmbda)
+    
+    # 故障率 / Failure rate
+    h_t = f_t / (R_t + f_t)
+    
+    # 平均寿命 / Mean life (Equal to λ for Poisson distribution)
+    mean_life = lmbda
+    
+    return t, f_t, R_t, h_t, mean_life
+
+# 各分布の結果をプロットする関数 / Function to plot results of each distribution
+def plot_distribution(t, f_t, R_t, h_t, mean_life, title):
+    """プロット関数 / Plot function"""
+    plt.figure(figsize=(12, 8))
+    
+    # 故障密度関数 / Failure density function
+    plt.subplot(2, 2, 1)
+    plt.stem(t, f_t, use_line_collection=True)
+    plt.title(f"{title} - Failure Density Function")
+    plt.xlabel("Time")
+    plt.ylabel("f(t)")
+    plt.grid(True)
+    
+    # 信頼度関数 / Reliability function
+    plt.subplot(2, 2, 2)
+    plt.stem(t, R_t, use_line_collection=True)
+    plt.title(f"{title} - Reliability Function")
+    plt.xlabel("Time")
+    plt.ylabel("R(t)")
+    plt.grid(True)
+    
+    # 故障率 / Failure rate
+    plt.subplot(2, 2, 3)
+    plt.stem(t, h_t, use_line_collection=True)
+    plt.title(f"{title} - Failure Rate")
+    plt.xlabel("Time")
+    plt.ylabel("h(t)")
+    plt.grid(True)
+    
+    # 平均寿命 / Mean life
+    plt.subplot(2, 2, 4)
+    plt.axhline(y=mean_life, color='r', linestyle='--', label="Mean Life")
+    plt.title(f"{title} - Mean Life: {mean_life:.2f}")
+    plt.xlabel("Time")
+    plt.ylabel("Mean Life")
+    plt.grid(True)
+    
+    plt.tight_layout()
+    plt.show()
+
+# サンプルの実行例 / Example of execution
+
+# 幾何分布 / Geometric distribution
+t, f_t, R_t, h_t, mean_life = geometric_distribution(p=0.3)
+plot_distribution(t, f_t, R_t, h_t, mean_life, "Geometric Distribution")
+
+# 負の二項分布 / Negative binomial distribution
+t, f_t, R_t, h_t, mean_life = negative_binomial_distribution(r=5, p=0.4)
+plot_distribution(t, f_t, R_t, h_t, mean_life, "Negative Binomial Distribution")
+
+# ポアソン分布 / Poisson distribution
+t, f_t, R_t, h_t, mean_life = poisson_distribution(lmbda=4)
+plot_distribution(t, f_t, R_t, h_t, mean_life, "Poisson Distribution")
