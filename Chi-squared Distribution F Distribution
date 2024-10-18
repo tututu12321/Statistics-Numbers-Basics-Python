@@ -1,0 +1,110 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy import stats, special
+
+### 1. χ²分布 (Chi-squared Distribution)
+# χ²分布は、サンプル分散の母分散に対する適合度を検定するために使用される
+# The chi-squared distribution is used to test the fit of sample variance to population variance.
+
+# パラメータの設定 (Setting parameters)
+df_chi2 = 5  # 自由度 (Degrees of freedom)
+x_chi2 = np.linspace(0, 20, 100)
+
+# χ²分布の確率密度関数 (Probability density function of chi-squared distribution)
+chi2_pdf = stats.chi2.pdf(x_chi2, df=df_chi2)
+
+# グラフ描画 (Plotting the chi-squared distribution)
+plt.figure(figsize=(8, 6))
+plt.plot(x_chi2, chi2_pdf, label=f'χ² Distribution (df={df_chi2})', color='blue')
+plt.title('Chi-squared Distribution')
+plt.xlabel('x')
+plt.ylabel('Probability Density')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+
+### 2. F分布 (F Distribution)
+# F分布は、2つの母分散の比率を検定するために使用される
+# The F distribution is used to test the ratio of two population variances.
+
+# パラメータの設定 (Setting parameters)
+dfn = 5  # 分子の自由度 (Degrees of freedom for the numerator)
+dfd = 2  # 分母の自由度 (Degrees of freedom for the denominator)
+x_f = np.linspace(0, 5, 100)
+
+# F分布の確率密度関数 (Probability density function of F distribution)
+f_pdf = stats.f.pdf(x_f, dfn, dfd)
+
+# グラフ描画 (Plotting the F distribution)
+plt.figure(figsize=(8, 6))
+plt.plot(x_f, f_pdf, label=f'F Distribution (dfn={dfn}, dfd={dfd})', color='green')
+plt.title('F Distribution')
+plt.xlabel('x')
+plt.ylabel('Probability Density')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+
+### 3. t分布 (t Distribution)
+# t分布は、母平均の推定における信頼区間や仮説検定に使用される
+# The t distribution is used for constructing confidence intervals and hypothesis testing for population means.
+
+# パラメータの設定 (Setting parameters)
+df_t = 10  # 自由度 (Degrees of freedom)
+x_t = np.linspace(-4, 4, 100)
+
+# t分布の確率密度関数 (Probability density function of t distribution)
+t_pdf = stats.t.pdf(x_t, df=df_t)
+
+# グラフ描画 (Plotting the t distribution)
+plt.figure(figsize=(8, 6))
+plt.plot(x_t, t_pdf, label=f't Distribution (df={df_t})', color='red')
+plt.title('t Distribution')
+plt.xlabel('x')
+plt.ylabel('Probability Density')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+
+### 4. ガンマ関数 (Gamma Function)
+# ガンマ関数は階乗の拡張として定義される特殊関数で、いくつかの統計分布の基礎となる
+# The gamma function is a generalization of the factorial function and serves as the basis for several distributions.
+
+# ガンマ関数の計算 (Calculating Gamma function values)
+x_gamma = np.linspace(0.1, 5, 100)
+gamma_values = special.gamma(x_gamma)
+
+# グラフ描画 (Plotting the Gamma function)
+plt.figure(figsize=(8, 6))
+plt.plot(x_gamma, gamma_values, label='Gamma Function', color='purple')
+plt.title('Gamma Function')
+plt.xlabel('x')
+plt.ylabel('Gamma(x)')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+
+### 5. ベータ関数 (Beta Function)
+# ベータ関数は2つの変数に対する積分により定義される関数で、ベータ分布に関連している
+# The beta function is a function of two variables and is related to the beta distribution.
+
+# パラメータの設定 (Setting parameters)
+a, b = 2, 5  # ベータ関数のパラメータ (Parameters for the Beta function)
+x_beta = np.linspace(0, 1, 100)
+
+# ベータ分布の確率密度関数 (Probability density function of the Beta distribution)
+beta_pdf = stats.beta.pdf(x_beta, a, b)
+
+# グラフ描画 (Plotting the Beta distribution)
+plt.figure(figsize=(8, 6))
+plt.plot(x_beta, beta_pdf, label=f'Beta Distribution (a={a}, b={b})', color='orange')
+plt.title('Beta Distribution')
+plt.xlabel('x')
+plt.ylabel('Probability Density')
+plt.legend()
+plt.grid(True)
+plt.show()
