@@ -1,0 +1,45 @@
+import numpy as np
+from scipy.stats import norm
+import matplotlib.pyplot as plt
+
+# 正規分布を用いた合格率L(p)の計算
+def acceptance_probability_normal(n, c, p):
+    mean = n * p
+    std_dev = np.sqrt(n * p * (1 - p))
+    return 1 - norm.cdf((c - mean) / std_dev)
+
+# パラメータ設定
+n = 50   # サンプルサイズ (Sample size)
+c = 2    # 許容される不良品数 (Acceptance number)
+
+# AQL (Acceptable Quality Level) 不良率の上限
+AQL = 0.02  # AQL 2% (p0)
+# LTPD (Lot Tolerance Percent Defective) 不良率の下限
+LTPD = 0.1  # LTPD 10% (p1)
+
+# 生産者危険 (α) と消費者危険 (β) の計算
+alpha = 1 - acceptance_probability_normal(n, c, AQL)
+beta = acceptance_probability_normal(n, c, LTPD)
+
+# 結果の表示
+print(f"AQL (Acceptable Quality Level) = {AQL * 100:.1f}%")
+print(f"生産者危険 (α, Producer's Risk) = {alpha:.4f}")
+print(f"LTPD (Lot Tolerance Percent Defective) = {LTPD * 100:.1f}%")
+print(f"消費者危険 (β, Consumer's Risk) = {beta:.4f}")
+
+# 不良率に対する合格率のグラフ
+p_values = np.linspace(0, 0.2, 100)
+L_p_values = [acceptance_probability_normal(n, c, p_val) for p_val in p_values]
+
+# OC曲線のプロット
+plt.plot(p_values * 100, L_p_values, label="Acceptance Probability")
+plt.axvline(x=AQL * 100, color='green', linestyle='--', label='AQL (2%)')
+plt.axvline(x=LTPD * 100, color='red', linestyle='--', label='LTPD (10%)')
+
+# グラフの設定
+plt.xlabel('Defective Rate (%)')
+plt.ylabel('Acceptance Probability (L(p))')
+plt.title('OC Curve (Operating Characteristic Curve) - Normal Distribution Approximation')
+plt.grid(True)
+plt.legend()
+plt.show()
