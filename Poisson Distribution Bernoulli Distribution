@@ -1,0 +1,93 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy import stats
+
+### 1. 離散一様分布 (Discrete Uniform Distribution)
+# 離散一様分布は、すべての値が等しい確率を持つ分布
+# Discrete uniform distribution is where all values have equal probability.
+
+# パラメータの設定 (Setting parameters)
+low, high = 1, 6  # サイコロの目 (Dice roll: 1 to 6)
+x_uniform = np.arange(low, high + 1)  # 1から6の整数 (Integers from 1 to 6)
+
+# 離散一様分布の確率質量関数 (Probability mass function of the discrete uniform distribution)
+uniform_pmf = stats.randint.pmf(x_uniform, low, high + 1)
+
+# プロット (Plotting the discrete uniform distribution)
+plt.figure(figsize=(8, 6))
+plt.bar(x_uniform, uniform_pmf, color='blue', alpha=0.7, label='Uniform PMF')
+plt.title('Discrete Uniform Distribution')
+plt.xlabel('x')
+plt.ylabel('Probability')
+plt.xticks(x_uniform)
+plt.legend()
+plt.grid(True)
+plt.show()
+
+
+### 2. ベルヌーイ分布 (Bernoulli Distribution)
+# ベルヌーイ分布は、成功または失敗の2つの結果を持つ試行に使用される
+# Bernoulli distribution represents a single trial with two possible outcomes: success or failure.
+
+# パラメータの設定 (Setting parameters)
+p = 0.7  # 成功の確率 (Probability of success)
+x_bernoulli = [0, 1]  # 失敗 (0), 成功 (1)
+
+# ベルヌーイ分布の確率質量関数 (Probability mass function of Bernoulli distribution)
+bernoulli_pmf = stats.bernoulli.pmf(x_bernoulli, p)
+
+# プロット (Plotting the Bernoulli distribution)
+plt.figure(figsize=(8, 6))
+plt.bar(x_bernoulli, bernoulli_pmf, color='green', alpha=0.7, label='Bernoulli PMF')
+plt.title('Bernoulli Distribution (p = 0.7)')
+plt.xlabel('Outcome')
+plt.ylabel('Probability')
+plt.xticks(x_bernoulli, ['Failure (0)', 'Success (1)'])
+plt.legend()
+plt.grid(True)
+plt.show()
+
+
+### 3. 二項分布 (Binomial Distribution)
+# 二項分布は、n回の独立したベルヌーイ試行の成功回数に基づく
+# Binomial distribution represents the number of successes in n independent Bernoulli trials.
+
+# パラメータの設定 (Setting parameters)
+n_trials = 10  # 試行回数 (Number of trials)
+p_success = 0.5  # 成功の確率 (Probability of success)
+x_binomial = np.arange(0, n_trials + 1)
+
+# 二項分布の確率質量関数 (Probability mass function of binomial distribution)
+binomial_pmf = stats.binom.pmf(x_binomial, n_trials, p_success)
+
+# プロット (Plotting the binomial distribution)
+plt.figure(figsize=(8, 6))
+plt.bar(x_binomial, binomial_pmf, color='purple', alpha=0.7, label='Binomial PMF')
+plt.title(f'Binomial Distribution (n = {n_trials}, p = {p_success})')
+plt.xlabel('Number of Successes')
+plt.ylabel('Probability')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+
+### 4. ポアソン分布 (Poisson Distribution)
+# ポアソン分布は、一定の時間または領域内で発生するイベントの数をモデル化
+# Poisson distribution models the number of events occurring in a fixed interval of time or space.
+
+# パラメータの設定 (Setting parameters)
+lambda_poisson = 3  # 平均発生率 (Average event rate, λ)
+x_poisson = np.arange(0, 15)
+
+# ポアソン分布の確率質量関数 (Probability mass function of Poisson distribution)
+poisson_pmf = stats.poisson.pmf(x_poisson, mu=lambda_poisson)
+
+# プロット (Plotting the Poisson distribution)
+plt.figure(figsize=(8, 6))
+plt.bar(x_poisson, poisson_pmf, color='red', alpha=0.7, label=f'Poisson PMF (λ={lambda_poisson})')
+plt.title(f'Poisson Distribution (λ = {lambda_poisson})')
+plt.xlabel('Number of Events')
+plt.ylabel('Probability')
+plt.legend()
+plt.grid(True)
+plt.show()
