@@ -1,0 +1,51 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy import stats
+
+# パラメータ設定
+n = 100  # サンプルサイズ (Sample size)
+x = 55   # 成功数 (Number of successes)
+p_hat = x / n  # 標本比率 (Sample proportion)
+
+# 期待値 (Expected value) は母比率 p に等しい（母比率が既知の場合）
+expected_value = p_hat  # ここでは標本比率を母比率と仮定
+
+# 標準偏差 (Standard deviation) の計算
+standard_deviation = np.sqrt((p_hat * (1 - p_hat)) / n)
+
+# 95% 信頼区間
+z_95 = 1.96  # 95% 信頼度の z 値
+ci_95_lower = p_hat - z_95 * standard_deviation
+ci_95_upper = p_hat + z_95 * standard_deviation
+
+# 99% 信頼区間
+z_99 = 2.576  # 99% 信頼度の z 値
+ci_99_lower = p_hat - z_99 * standard_deviation
+ci_99_upper = p_hat + z_99 * standard_deviation
+
+# 標本準偏差 (Sample standard deviation) の計算
+sample_standard_deviation = np.sqrt(np.sum((np.full(n, p_hat) - p_hat) ** 2) / (n - 1))
+
+# 結果の表示
+print(f"標本比率 (Sample proportion): {p_hat:.4f}")
+print(f"期待値 (Expected value): {expected_value:.4f}")
+print(f"標準偏差 (Standard deviation): {standard_deviation:.4f}")
+print(f"母平均 (Population mean): {expected_value:.4f}")
+print(f"標本準偏差 (Sample standard deviation): {sample_standard_deviation:.4f}")
+
+print(f"\n95% 信頼区間 (95% Confidence Interval): [{ci_95_lower:.4f}, {ci_95_upper:.4f}]")
+print(f"99% 信頼区間 (99% Confidence Interval): [{ci_99_lower:.4f}, {ci_99_upper:.4f}]")
+
+# プロット
+plt.figure(figsize=(8, 6))
+plt.axvline(p_hat, color='blue', linestyle='-', label='Sample Proportion (p̂)')
+plt.axvspan(ci_95_lower, ci_95_upper, color='green', alpha=0.3, label='95% Confidence Interval')
+plt.axvspan(ci_99_lower, ci_99_upper, color='red', alpha=0.2, label='99% Confidence Interval')
+
+# プロットの設定
+plt.title('Sample Proportion and Confidence Intervals')
+plt.xlabel('Proportion')
+plt.ylabel('Density')
+plt.legend(loc='upper right')
+plt.grid(True)
+plt.show()
