@@ -1,0 +1,59 @@
+import numpy as np
+from scipy.optimize import minimize
+from scipy.stats import norm, invgamma
+
+# 1. サンプルデータの生成 (Generating sample data)
+np.random.seed(42)
+data = np.random.normal(loc=5.0, scale=2.0, size=100)  # 平均5、標準偏差2の正規分布からサンプルを生成 (Samples from normal distribution with mean=5, std=2)
+
+# 2. 事前分布の定義 (Defining prior distributions)
+# 平均の事前分布 (Prior distribution for the mean): 正規分布 (Normal distribution)
+mu_prior_mean = 0
+mu_prior_std = 1
+
+# 標準偏差の事前分布 (Prior distribution for the standard deviation): 逆ガンマ分布 (Inverse gamma distribution)
+sigma_prior_alpha = 3
+sigma_prior_beta = 1
+
+# 3. 尤度関数と事前分布を組み合わせたMAP推定の定義 (Defining the MAP estimation function)
+def negative_log_posterior(params, data):
+    mu, sigma = params[0], np.abs(params[1])  # sigmaが負にならないように絶対値 (Ensure sigma is non-negative)
+
+    # 負の対数尤度 (Negative log-likelihood)
+    nll = -np.sum(norm.logpdf(data, loc=mu, scale=sigma))
+    
+    # 負の対数事前確率 (Negative log-priors)
+    nlp_mu = -norm.logpdf(mu, loc=mu_prior_mean, scale=mu_prior_std)  # 平均に対する事前 (Prior for mean)
+    nlp_sigma = -invgamma.logpdf(sigma, a=sigma_prior_alpha, scale=sigma_prior_beta)  # 標準偏差に対する事前 (Prior for standard deviation)
+
+    # 負の対数事後確率 (Negative log-posterior)
+    return nll + nlp_mu + nlp_sigma
+
+# 4. MAP推定の実行 (Perform MAP Estimation)
+# 初期値の設定 (Initial guess for parameters)
+initial_params = [0, 1]
+
+# 最小化問題として解く (Solving as a minimization problem)
+result_map = minimize(negative_log_posterior, initial_params, args=(data,), method='L-BFGS-B')
+
+# 推定されたパラメータの取得 (Extracting estimated parameters)
+mu_map, sigma_map = result_map.x
+print(f"Estimated mean (mu) using MAP: {mu_map:.2f}")
+print(f"Estimated standard deviation (sigma) using MAP: {sigma_map:.2f}")
+
+# 5. 結果の可視化 (Visualizing the results)
+import matplotlib.pyplot as plt
+
+# 推定された正規分布に基づくPDFのプロット (Plotting the PDF of the estimated normal distribution)
+x = np.linspace(min(data), max(data), 100)
+pdf_estimated_map = norm.pdf(x, loc=mu_map, scale=sigma_map)
+
+plt.figure(figsize=(8, 6))
+plt.hist(data, bins=20, density=True, alpha=0.6, color='gray', label='Sample Data')
+plt.plot(x, pdf_estimated_map, label=f'Estimated Normal PDF (MAP)\n(mu={mu_map:.2f}, sigma={sigma_map:.2f})', color='blue')
+plt.title('MAP Estimation for Normal Distribution')
+plt.xlabel('Data')
+plt.ylabel('Density')
+plt.legend()
+plt.grid(True)
+plt.show()
