@@ -1,0 +1,20 @@
+import numpy as np
+
+# パラメータ設定
+n = 10    # 試行回数 (Number of trials)
+p = 0.3   # 成功確率 (Probability of success)
+
+# 期待値 (Expected value) の計算
+expected_value = n * p
+
+# 分散 (Variance) の計算
+variance = n * p * (1 - p)
+
+# 標準偏差 (Standard deviation) の計算
+standard_deviation = np.sqrt(variance)
+
+# 結果を表示
+print(f"試行回数 n = {n}, 成功確率 p = {p}")
+print(f"期待値 (Expected Value): E(X) = {expected_value}")
+print(f"分散 (Variance): Var(X) = {variance}")
+print(f"標準偏差 (Standard Deviation): σ(X) = {standard_deviation}")
