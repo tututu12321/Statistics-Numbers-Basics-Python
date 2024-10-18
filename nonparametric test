@@ -1,0 +1,50 @@
+import numpy as np
+from scipy import stats
+import matplotlib.pyplot as plt
+
+# サンプルデータの生成 (Generating sample data)
+np.random.seed(42)
+
+# 1. マン・ホイットニーのU検定 (Mann-Whitney U Test)
+group1 = np.random.normal(loc=5.0, scale=1.0, size=100)  # グループ1 (Group 1)
+group2 = np.random.normal(loc=5.5, scale=1.5, size=100)  # グループ2 (Group 2)
+
+u_statistic, p_value = stats.mannwhitneyu(group1, group2, alternative='two-sided')
+print(f"Mann-Whitney U statistic: {u_statistic:.2f}, p-value: {p_value:.4f}")
+
+# 2. ウィルコクソンの順位和検定 (Wilcoxon Signed-Rank Test)
+before = np.random.normal(loc=5.0, scale=1.0, size=30)  # 測定前 (Before treatment)
+after = before + np.random.normal(loc=0.5, scale=0.5, size=30)  # 測定後 (After treatment)
+
+wilcoxon_statistic, p_value = stats.wilcoxon(before, after)
+print(f"Wilcoxon Signed-Rank statistic: {wilcoxon_statistic:.2f}, p-value: {p_value:.4f}")
+
+# 3. クラスカル・ウォリス検定 (Kruskal-Wallis Test)
+group1 = np.random.normal(loc=5.0, scale=1.0, size=30)
+group2 = np.random.normal(loc=5.5, scale=1.5, size=30)
+group3 = np.random.normal(loc=6.0, scale=1.0, size=30)
+
+kruskal_statistic, p_value = stats.kruskal(group1, group2, group3)
+print(f"Kruskal-Wallis H statistic: {kruskal_statistic:.2f}, p-value: {p_value:.4f}")
+
+# 4. コルモゴロフ・スミルノフ検定 (Kolmogorov-Smirnov Test)
+dist1 = np.random.normal(loc=0.0, scale=1.0, size=1000)
+dist2 = np.random.normal(loc=0.5, scale=1.0, size=1000)
+
+ks_statistic, p_value = stats.ks_2samp(dist1, dist2)
+print(f"Kolmogorov-Smirnov statistic: {ks_statistic:.2f}, p-value: {p_value:.4f}")
+
+# 5. フリードマン検定 (Friedman Test)
+group1 = np.random.normal(loc=5.0, scale=1.0, size=30)
+group2 = group1 + np.random.normal(loc=0.5, scale=1.0, size=30)
+group3 = group1 + np.random.normal(loc=1.0, scale=1.0, size=30)
+
+friedman_statistic, p_value = stats.friedmanchisquare(group1, group2, group3)
+print(f"Friedman statistic: {friedman_statistic:.2f}, p-value: {p_value:.4f}")
+
+# 追加: データのプロット (Optional: Plot the data)
+plt.figure(figsize=(10, 6))
+plt.boxplot([group1, group2, group3], labels=['Group 1', 'Group 2', 'Group 3'])
+plt.title('Boxplot of Data Groups')
+plt.grid(True)
+plt.show()
