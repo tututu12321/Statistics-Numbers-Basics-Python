@@ -1,0 +1,59 @@
+import numpy as np
+import scipy.stats as stats
+import matplotlib.pyplot as plt
+
+# 母集団データの生成（例: 正規分布に従う母集団）
+np.random.seed(0)
+population = np.random.normal(loc=50, scale=10, size=10000)  # 母集団の平均50、標準偏差10、サンプル数10000
+
+# 標本抽出
+sample_size = 100  # 標本サイズ
+sample = np.random.choice(population, size=sample_size, replace=False)
+
+# 1. 標本平均と不偏分散（不偏推定量）
+sample_mean = np.mean(sample)  # 標本平均
+sample_variance = np.var(sample, ddof=1)  # 標本不偏分散
+
+print(f"標本平均 (Sample Mean): {sample_mean:.4f}")
+print(f"標本不偏分散 (Unbiased Sample Variance): {sample_variance:.4f}")
+
+# 2. 最尤推定量（MLE）
+# 正規分布の平均と分散の最尤推定量は、標本平均と標本分散で表される
+mle_mean = sample_mean  # MLE for mean
+mle_variance = np.var(sample, ddof=0)  # MLE for variance (ddof=0)
+
+print(f"最尤推定量 (MLE Mean): {mle_mean:.4f}")
+print(f"最尤推定量 (MLE Variance): {mle_variance:.4f}")
+
+# 3. 区間推定 (Confidence Interval) 95%信頼区間
+confidence_level = 0.95
+z = stats.norm.ppf(1 - (1 - confidence_level) / 2)
+margin_of_error = z * np.sqrt(sample_variance / sample_size)
+
+ci_lower = sample_mean - margin_of_error
+ci_upper = sample_mean + margin_of_error
+
+print(f"95% 信頼区間 (95% Confidence Interval): [{ci_lower:.4f}, {ci_upper:.4f}]")
+
+# 4. 区間推定 (Confidence Interval) 99%信頼区間
+confidence_level_99 = 0.99
+z_99 = stats.norm.ppf(1 - (1 - confidence_level_99) / 2)
+margin_of_error_99 = z_99 * np.sqrt(sample_variance / sample_size)
+
+ci_lower_99 = sample_mean - margin_of_error_99
+ci_upper_99 = sample_mean + margin_of_error_99
+
+print(f"99% 信頼区間 (99% Confidence Interval): [{ci_lower_99:.4f}, {ci_upper_99:.4f}]")
+
+# 区間推定のプロット
+plt.figure(figsize=(8, 6))
+plt.axvline(sample_mean, color='blue', linestyle='-', label='Sample Mean')
+plt.axvspan(ci_lower, ci_upper, color='green', alpha=0.3, label='95% Confidence Interval')
+plt.axvspan(ci_lower_99, ci_upper_99, color='red', alpha=0.2, label='99% Confidence Interval')
+
+plt.title('Sample Mean and Confidence Intervals')
+plt.xlabel('Value')
+plt.ylabel('Density')
+plt.legend(loc='upper right')
+plt.grid(True)
+plt.show()
