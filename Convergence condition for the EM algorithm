@@ -1,0 +1,95 @@
+import numpy as np
+from scipy.stats import multivariate_normal
+import matplotlib.pyplot as plt
+
+# 1. サンプルデータの生成 (Generating sample data)
+# 2つの異なるガウス分布からサンプルを生成 (Generate samples from two different Gaussian distributions)
+np.random.seed(42)
+mean1, cov1, size1 = [2, 2], [[1, 0.5], [0.5, 1]], 300  # 第1のガウス分布 (First Gaussian distribution)
+mean2, cov2, size2 = [7, 7], [[1, -0.5], [-0.5, 1]], 300  # 第2のガウス分布 (Second Gaussian distribution)
+
+data1 = np.random.multivariate_normal(mean1, cov1, size1)
+data2 = np.random.multivariate_normal(mean2, cov2, size2)
+
+# 混合データを作成 (Combine the two datasets into a single dataset)
+data = np.vstack((data1, data2))
+
+# 2. パラメータの初期化 (Initializing parameters)
+n, d = data.shape  # サンプル数と特徴数 (Number of samples and features)
+k = 2  # クラスタ数 (Number of clusters)
+
+# 混合係数の初期化 (Initial mixing coefficients)
+pi = np.ones(k) / k  # 各クラスタの重みは均等 (Each cluster is equally weighted)
+
+# クラスタごとの平均の初期化 (Initial means for each cluster)
+mu = np.random.rand(k, d)
+
+# クラスタごとの共分散行列の初期化 (Initial covariance matrices for each cluster)
+cov = np.array([np.eye(d)] * k)  # 各クラスタに単位行列 (Identity matrix for each cluster)
+
+# 3. EMアルゴリズムの実行 (Executing the EM algorithm)
+def gaussian(x, mean, cov):
+    """多変量ガウス分布の確率密度関数 (Multivariate Gaussian PDF)"""
+    return multivariate_normal.pdf(x, mean=mean, cov=cov)
+
+def e_step(data, mu, cov, pi, responsibilities):
+    """Eステップ (Expectation Step): 各サンプルの責任度を計算 (Calculate responsibilities for each sample)"""
+    for i in range(k):
+        responsibilities[:, i] = pi[i] * gaussian(data, mu[i], cov[i])
+    responsibilities /= responsibilities.sum(axis=1, keepdims=True)  # 正規化 (Normalize the responsibilities)
+
+def m_step(data, responsibilities):
+    """Mステップ (Maximization Step): パラメータの更新 (Update parameters based on responsibilities)"""
+    Nk = responsibilities.sum(axis=0)  # クラスタごとの責任度の合計 (Sum of responsibilities for each cluster)
+    pi = Nk / n  # 混合係数の更新 (Update mixing coefficients)
+    mu = (responsibilities.T @ data) / Nk[:, np.newaxis]  # 平均の更新 (Update means)
+    cov = np.zeros((k, d, d))  # 共分散行列の初期化 (Initialize covariance matrices)
+    for i in range(k):
+        diff = data - mu[i]
+        cov[i] = (responsibilities[:, i][:, np.newaxis] * diff).T @ diff / Nk[i]  # 共分散行列の更新 (Update covariance matrices)
+    return pi, mu, cov
+
+def log_likelihood(data, mu, cov, pi):
+    """対数尤度を計算 (Calculate the log-likelihood)"""
+    ll = 0
+    for i in range(k):
+        ll += pi[i] * gaussian(data, mu[i], cov[i])
+    return np.sum(np.log(ll))  # 全サンプルに対する対数尤度の合計 (Total log-likelihood for all samples)
+
+# EMアルゴリズムの収束条件 (Convergence condition for the EM algorithm)
+tolerance = 1e-6  # 許容誤差 (Tolerance level for convergence)
+log_likelihoods = []  # 対数尤度を保存するリスト (List to store log-likelihood values)
+
+# responsibilitiesの初期化 (Initialize responsibilities)
+responsibilities = np.zeros((n, k))
+
+for iteration in range(100):  # 最大100回のイテレーション (Maximum of 100 iterations)
+    # Eステップ (E-step)
+    e_step(data, mu, cov, pi, responsibilities)
+    
+    # Mステップ (M-step)
+    pi, mu, cov = m_step(data, responsibilities)
+    
+    # 対数尤度の計算 (Calculate log-likelihood)
+    ll = log_likelihood(data, mu, cov, pi)
+    log_likelihoods.append(ll)
+    
+    # 収束判定 (Check for convergence)
+    if iteration > 0 and np.abs(log_likelihoods[-1] - log_likelihoods[-2]) < tolerance:
+        break  # 収束 (Converged)
+
+print(f"EMアルゴリズムが {iteration + 1} 回のイテレーションで収束しました")
+print(f"推定された混合係数 (Estimated mixing coefficients): {pi}")
+print(f"推定された平均 (Estimated means): \n{mu}")
+print(f"推定された共分散行列 (Estimated covariance matrices): \n{cov}")
+
+# 4. 結果の可視化 (Visualizing the results)
+plt.figure(figsize=(8, 6))
+plt.scatter(data[:, 0], data[:, 1], c=responsibilities.argmax(axis=1), cmap='viridis', alpha=0.6)
+plt.scatter(mu[:, 0], mu[:, 1], c='red', marker='x', s=100, label='Estimated Means')
+plt.title('EM Algorithm for Gaussian Mixture Model')
+plt.xlabel('Feature 1')  # 特徴1 (First feature)
+plt.ylabel('Feature 2')  # 特徴2 (Second feature)
+plt.legend()
+plt.grid(True)
+plt.show()
