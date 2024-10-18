@@ -1,0 +1,72 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Constants (定数の設定)
+lambda_value = 0.1  # Failure rate (故障率)
+n = 1000  # Sample size (サンプルサイズ)
+time_points = np.linspace(0, 100, n)  # Time points (時間のポイント)
+
+# Probability Density Function f(t)
+def f(t):
+    return lambda_value * np.exp(-lambda_value * t)  # f(t) = λe^(-λt)
+
+# Reliability Function R(t)
+def R(t):
+    return np.exp(-lambda_value * t)  # R(t) = e^(-λt)
+
+# Unreliability Function F(t)
+def F(t):
+    return 1 - R(t)  # F(t) = 1 - R(t)
+
+# Cumulative Hazard Function H(t)
+def H(t):
+    return -np.log(R(t))  # H(t) = -log(R(t))
+
+# Mean Time To Failure (MTTF)
+MTTF = 1 / lambda_value  # MTTF = 1 / λ
+
+# Displaying results (結果の表示)
+print(f"Failure Rate (故障率): λ = {lambda_value}")
+print(f"MTTF (Mean Time To Failure): {MTTF}")
+
+# Setting up the plot (プロットの設定)
+plt.figure(figsize=(12, 8))
+
+# Plotting Probability Density Function f(t)
+plt.subplot(2, 2, 1)
+plt.plot(time_points, f(time_points), label='f(t)', color='blue')
+plt.title('Probability Density Function f(t)', fontsize=16)  # Title in English
+plt.xlabel('Time', fontsize=14)  # X-axis label in English
+plt.ylabel('Density', fontsize=14)  # Y-axis label in English
+plt.grid()
+plt.legend()
+
+# Plotting Reliability Function R(t)
+plt.subplot(2, 2, 2)
+plt.plot(time_points, R(time_points), label='R(t)', color='green')
+plt.title('Reliability Function R(t)', fontsize=16)  # Title in English
+plt.xlabel('Time', fontsize=14)  # X-axis label in English
+plt.ylabel('Reliability', fontsize=14)  # Y-axis label in English
+plt.grid()
+plt.legend()
+
+# Plotting Unreliability Function F(t)
+plt.subplot(2, 2, 3)
+plt.plot(time_points, F(time_points), label='F(t)', color='orange')
+plt.title('Unreliability Function F(t)', fontsize=16)  # Title in English
+plt.xlabel('Time', fontsize=14)  # X-axis label in English
+plt.ylabel('Unreliability', fontsize=14)  # Y-axis label in English
+plt.grid()
+plt.legend()
+
+# Plotting Cumulative Hazard Function H(t)
+plt.subplot(2, 2, 4)
+plt.plot(time_points, H(time_points), label='H(t)', color='red')
+plt.title('Cumulative Hazard Function H(t)', fontsize=16)  # Title in English
+plt.xlabel('Time', fontsize=14)  # X-axis label in English
+plt.ylabel('Hazard', fontsize=14)  # Y-axis label in English
+plt.grid()
+plt.legend()
+
+plt.tight_layout()  # Layout adjustment
+plt.show()  # Show plot
