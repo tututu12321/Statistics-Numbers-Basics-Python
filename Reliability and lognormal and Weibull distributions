@@ -1,0 +1,79 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.integrate import quad
+from scipy.stats import weibull_min
+
+# 対数正規分布のパラメータ (Parameters for Log-Normal Distribution)
+mu = 0  # 平均 (Mean)
+sigma = 0.5  # 標準偏差 (Standard Deviation)
+n = 1000  # サンプルサイズ (Sample size)
+t_log = np.linspace(0.01, 5, n)  # tの範囲 (Range for t)
+
+# 確率密度関数 f(t) の計算 (Calculating PDF for Log-Normal Distribution)
+def log_normal_pdf(t):
+    return (1 / (np.sqrt(2 * np.pi) * sigma)) * np.exp(-((np.log(t) - mu) ** 2) / (2 * sigma ** 2))
+
+# 信頼度関数 R(t) の計算 (Calculating CDF for Log-Normal Distribution)
+def log_normal_cdf(t):
+    # 不定積分を計算するためのラムダ関数 (Lambda function for integration)
+    integrand = lambda x: log_normal_pdf(x)
+    integral, _ = quad(integrand, 0, t)  # 積分を計算 (Calculating the integral)
+    return 1 - integral  # R(t) = 1 - ∫ f(x) dx
+
+# ワイブル分布のパラメータ (Parameters for Weibull Distribution)
+m = 1.5  # 形状パラメータ (Shape parameter)
+eta = 1  # スケールパラメータ (Scale parameter)
+
+# 時間のポイントを設定 (Setting time points)
+t_weibull = np.linspace(0.01, 3, n)  # tの範囲 (Range for t)
+
+# 確率密度関数 f(t) の計算 (Calculating PDF for Weibull Distribution)
+def weibull_pdf(t):
+    return (m / eta) * (t / eta)**(m - 1) * np.exp(-(t / eta)**m)
+
+# 信頼度関数 R(t) の計算 (Calculating CDF for Weibull Distribution)
+def weibull_cdf(t):
+    return 1 - np.exp(-(t / eta)**m)  # R(t) = 1 - e^(- (t / η)^m)
+
+# プロットの設定 (Setting up the plot)
+plt.figure(figsize=(12, 8))
+
+# 対数正規分布のPDFをプロット (Plotting PDF of Log-Normal Distribution)
+plt.subplot(2, 2, 1)
+plt.plot(t_log, log_normal_pdf(t_log), label='Log-Normal PDF', color='blue')
+plt.title('Log-Normal Distribution PDF', fontsize=16)  # Title in English
+plt.xlabel('t', fontsize=14)  # X-axis label in English
+plt.ylabel('Density', fontsize=14)  # Y-axis label in English
+plt.grid()
+plt.legend()
+
+# 対数正規分布のCDFをプロット (Plotting CDF of Log-Normal Distribution)
+plt.subplot(2, 2, 2)
+plt.plot(t_log, [log_normal_cdf(t) for t in t_log], label='Log-Normal CDF', color='green')
+plt.title('Log-Normal Distribution CDF', fontsize=16)  # Title in English
+plt.xlabel('t', fontsize=14)  # X-axis label in English
+plt.ylabel('Probability', fontsize=14)  # Y-axis label in English
+plt.grid()
+plt.legend()
+
+# ワイブル分布のPDFをプロット (Plotting PDF of Weibull Distribution)
+plt.subplot(2, 2, 3)
+plt.plot(t_weibull, weibull_pdf(t_weibull), label='Weibull PDF', color='orange')
+plt.title('Weibull Distribution PDF', fontsize=16)  # Title in English
+plt.xlabel('t', fontsize=14)  # X-axis label in English
+plt.ylabel('Density', fontsize=14)  # Y-axis label in English
+plt.grid()
+plt.legend()
+
+# ワイブル分布のCDFをプロット (Plotting CDF of Weibull Distribution)
+plt.subplot(2, 2, 4)
+plt.plot(t_weibull, [weibull_cdf(t) for t in t_weibull], label='Weibull CDF', color='red')
+plt.title('Weibull Distribution CDF', fontsize=16)  # Title in English
+plt.xlabel('t', fontsize=14)  # X-axis label in English
+plt.ylabel('Probability', fontsize=14)  # Y-axis label in English
+plt.grid()
+plt.legend()
+
+plt.tight_layout()  # Layout adjustment
+plt.show()  # Show plot
+
