@@ -1,0 +1,22 @@
+# 必要なライブラリをインポート / Import necessary libraries
+import numpy as np
+from sklearn.mixture import GaussianMixture
+import matplotlib.pyplot as plt
+from sklearn.datasets import make_blobs
+
+# データセットを生成 (ここは任意のデータに置き換え可能) / Generate synthetic dataset (you can replace this with your own dataset)
+X, y_true = make_blobs(n_samples=300, centers=4, cluster_std=0.60, random_state=0)
+
+# 混合ガウスモデル(GMM)の作成 / Fit a Gaussian Mixture Model
+gmm = GaussianMixture(n_components=4)
+gmm.fit(X)  # モデルをデータに適合させる / Fit the model to the data
+labels = gmm.predict(X)  # 各データ点にクラスタラベルを割り当てる / Assign each data point to a cluster
+
+# クラスタリング結果をプロット / Plot the clustering results
+plt.scatter(X[:, 0], X[:, 1], c=labels, s=40, cmap='viridis')
+
+# GMMコンポーネントをプロット / Plot GMM components
+probs = gmm.predict_proba(X)  # 各データ点の確率を予測 / Predict probabilities for each data point
+sizes = 50 * probs.max(1)**2  # 確率に基づいて点のサイズを調整 / Scale sizes by probability
+plt.scatter(X[:, 0], X[:, 1], c=labels, s=sizes, edgecolor='k', linewidth=0.5, cmap='viridis')
+plt.show()  # グラフを表示 / Show the plot
