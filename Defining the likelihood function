@@ -1,0 +1,42 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.optimize import minimize
+from scipy.stats import norm
+
+# 1. サンプルデータの生成 (Generating sample data)
+np.random.seed(42)
+data = np.random.normal(loc=5.0, scale=2.0, size=100)  # 平均5、標準偏差2の正規分布 (Normal distribution with mean=5, std=2)
+
+# 2. 尤度関数の定義 (Defining the likelihood function)
+# 負の対数尤度関数 (Negative log-likelihood function)
+def negative_log_likelihood(params, data):
+    mu, sigma = params[0], np.abs(params[1])  # 標準偏差が負にならないように絶対値をとる (Take absolute value of sigma to avoid negative)
+    nll = -np.sum(norm.logpdf(data, loc=mu, scale=sigma))  # logpdfを使って対数尤度を計算 (Using logpdf to compute log-likelihood)
+    return nll
+
+# 3. 最尤推定の実行 (Perform Maximum Likelihood Estimation)
+# 初期値の設定 (Initial guess for the parameters)
+initial_params = [0, 1]
+
+# 最小化問題として解く (Solving as a minimization problem)
+result = minimize(negative_log_likelihood, initial_params, args=(data,), method='L-BFGS-B')
+
+# 推定されたパラメータの取得 (Extracting the estimated parameters)
+mu_mle, sigma_mle = result.x
+print(f"Estimated mean (mu): {mu_mle:.2f}")
+print(f"Estimated standard deviation (sigma): {sigma_mle:.2f}")
+
+# 4. 推定結果の可視化 (Visualizing the estimated results)
+# 推定された正規分布に基づくPDFのプロット (Plotting the PDF of the estimated normal distribution)
+x = np.linspace(min(data), max(data), 100)
+pdf_estimated = norm.pdf(x, loc=mu_mle, scale=sigma_mle)
+
+plt.figure(figsize=(8, 6))
+plt.hist(data, bins=20, density=True, alpha=0.6, color='gray', label='Sample Data')
+plt.plot(x, pdf_estimated, label=f'Estimated Normal PDF\n(mu={mu_mle:.2f}, sigma={sigma_mle:.2f})', color='red')
+plt.title('Maximum Likelihood Estimation for Normal Distribution')
+plt.xlabel('Data')
+plt.ylabel('Density')
+plt.legend()
+plt.grid(True)
+plt.show()
