@@ -1,0 +1,35 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# サンプルデータの生成 / Generate sample data
+np.random.seed(0)  # 乱数シードを固定 / Fix the random seed
+data = np.random.normal(loc=50, scale=10, size=100)  # 平均50、標準偏差10の正規分布 / Normal distribution with mean 50, std dev 10
+
+# 統計量の計算 / Calculate statistics
+mean_value = np.mean(data)  # 平均 / Mean
+variance_value = np.var(data, ddof=1)  # 分散 (不偏分散) / Variance (unbiased)
+std_dev_value = np.std(data, ddof=1)  # 標準偏差 (不偏標準偏差) / Standard deviation (unbiased)
+
+# 統計量の表示 / Display statistics
+print(f"平均 (Mean): {mean_value:.4f}")
+print(f"分散 (Variance): {variance_value:.4f}")
+print(f"標準偏差 (Standard Deviation): {std_dev_value:.4f}")
+
+# 箱ひげ図の描画 / Plot boxplot
+plt.figure(figsize=(12, 6))
+
+plt.subplot(1, 2, 1)
+plt.boxplot(data, vert=False, patch_artist=True, boxprops=dict(facecolor='lightblue'))
+plt.title('Boxplot')  # タイトルを英語に変更 / Title in English
+plt.xlabel('Value')  # ラベルを英語に変更 / X-axis label in English
+
+# ヒストグラムの描画 / Plot histogram
+plt.subplot(1, 2, 2)
+plt.hist(data, bins=15, color='lightgreen', edgecolor='black')
+plt.title('Histogram')  # タイトルを英語に変更 / Title in English
+plt.xlabel('Value')  # X軸ラベルを英語に変更 / X-axis label in English
+plt.ylabel('Frequency')  # Y軸ラベルを英語に変更 / Y-axis label in English
+
+# プロットの表示 / Show the plots
+plt.tight_layout()
+plt.show()
