@@ -1,0 +1,40 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 定数の設定 (Setting constants)
+R0 = 1.0  # 初期抵抗 (Initial resistance)
+n = 5.0   # スケールパラメータ (Scale parameter)
+m = 2.0   # 形状パラメータ (Shape parameter)
+
+# 時間の範囲を設定 (Setting time range)
+t = np.linspace(0, 20, 100)  # tの範囲 (Range for t)
+
+# 抵抗 R(t) の計算 (Calculating resistance R(t))
+R_t = R0 * np.exp(- (t / n) ** m)
+
+# 信頼度関数 F(t) の計算 (Calculating CDF F(t))
+F_t = 1 - R_t  # F(t) = 1 - R(t)
+
+# プロットの設定 (Setting up the plot)
+plt.figure(figsize=(12, 6))
+
+# R(t) のプロット (Plotting R(t))
+plt.subplot(1, 2, 1)
+plt.plot(t, R_t, label='R(t)', color='blue')
+plt.title('Resistance R(t) vs Time', fontsize=16)  # Title in English
+plt.xlabel('Time', fontsize=14)  # X-axis label in English
+plt.ylabel('Resistance', fontsize=14)  # Y-axis label in English
+plt.grid()
+plt.legend()
+
+# F(t) のプロット (Plotting F(t))
+plt.subplot(1, 2, 2)
+plt.plot(t, F_t, label='F(t)', color='green')
+plt.title('Reliability Function F(t) vs Time', fontsize=16)  # Title in English
+plt.xlabel('Time', fontsize=14)  # X-axis label in English
+plt.ylabel('Probability', fontsize=14)  # Y-axis label in English
+plt.grid()
+plt.legend()
+
+plt.tight_layout()  # Layout adjustment
+plt.show()  # Show plot
