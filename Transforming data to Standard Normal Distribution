@@ -1,0 +1,49 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# サンプルデータ (Sample Data)
+data = np.array([9.5, 10.5, 10.3, 10.1, 9.8, 10.6, 9.7, 10.0, 10.4, 9.9])
+
+# 元データの期待値 (Mean of original data)
+mean = np.mean(data)
+
+# 元データの標準偏差 (Standard Deviation of original data)
+std_dev = np.std(data)
+
+# 標準正規分布への変換 (Transforming data to Standard Normal Distribution)
+z_scores = (data - mean) / std_dev
+
+# 標準正規分布に変換されたデータの期待値 (Mean of Z-scores)
+z_mean = np.mean(z_scores)
+
+# 標準正規分布に変換されたデータの分散 (Variance of Z-scores)
+z_variance = np.var(z_scores)
+
+# 標準誤差 (Standard Error)
+standard_error = std_dev / np.sqrt(len(data))
+
+# 結果の表示 (Displaying Results)
+print(f"Original Data Mean (期待値): {mean}")
+print(f"Original Data Standard Deviation (標準偏差): {std_dev}")
+print(f"Z-scores (標準正規分布): {z_scores}")
+print(f"Mean of Z-scores (標準正規分布の期待値): {z_mean}")
+print(f"Variance of Z-scores (標準正規分布の分散): {z_variance}")
+print(f"Standard Error (標準誤差): {standard_error}")
+
+# Zスコアのヒストグラムをプロット (Plotting Histogram of Z-scores)
+plt.figure(figsize=(10, 6))
+sns.histplot(z_scores, bins=10, kde=True, color='blue', stat='density', label='Z-scores Histogram')  # Z-scoresのヒストグラム
+
+# 標準正規分布のPDFをプロット
+x = np.linspace(-3, 3, 100)
+pdf = (1 / np.sqrt(2 * np.pi)) * np.exp(-0.5 * x**2)  # 標準正規分布の確率密度関数
+plt.plot(x, pdf, color='red', label='Standard Normal Distribution PDF')
+
+# グラフのタイトルとラベルを設定
+plt.title('Histogram of Z-scores and Standard Normal Distribution', fontsize=16)
+plt.xlabel('Z-scores', fontsize=14)
+plt.ylabel('Density', fontsize=14)
+plt.legend()
+plt.grid(True)
+plt.show()  # プロットを表示
