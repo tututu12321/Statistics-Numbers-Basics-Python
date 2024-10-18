@@ -1,0 +1,30 @@
+import numpy as np
+from scipy.stats import norm
+
+# ストレスと強度のパラメータ (仮定)
+# Parameters for stress and strength (assumed)
+mu_s = 100  # ストレスの平均 / Mean of stress
+sigma_s = 15  # ストレスの標準偏差 / Standard deviation of stress
+mu_k = 120  # 強度の平均 / Mean of strength
+sigma_k = 20  # 強度の標準偏差 / Standard deviation of strength
+
+# 不信頼度の計算
+# Function to calculate unreliability
+def calculate_unreliability(mu_s, sigma_s, mu_k, sigma_k):
+    # 分母の計算: σ_s^2 + σ_k^2 の平方根
+    # Calculate the denominator: sqrt(σ_s^2 + σ_k^2)
+    denominator = np.sqrt(sigma_s**2 + sigma_k**2)
+    
+    # 正規分布の累積分布関数を使って不信頼度を計算
+    # Calculate unreliability using the cumulative distribution function (CDF) of the normal distribution
+    unreliability = 1 - norm.cdf((mu_k - mu_s) / denominator)
+    
+    return unreliability
+
+# 不信頼度の結果
+# Calculate the unreliability
+unreliability = calculate_unreliability(mu_s, sigma_s, mu_k, sigma_k)
+
+# 結果を表示
+# Display the result
+print(f"不信頼度: {unreliability:.4f} / Unreliability: {unreliability:.4f}")
