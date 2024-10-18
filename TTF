@@ -1,0 +1,40 @@
+import numpy as np
+
+# 定数 (例: ボルツマン定数 k [eV/K] など)
+k = 8.617333262145e-5  # eV/K (ボルツマン定数)
+
+# パラメータの設定 (仮定)
+A = 1e3      # 加速係数
+E_a = 0.7    # 活性化エネルギー [eV]
+T = 300      # 絶対温度 [K]
+E = 1.0      # 電界 [V/nm]
+V_G = 1.2    # ゲート電圧 [V]
+beta = 0.5   # E-modelの係数
+G = 0.1      # 1/E-modelの係数
+gamma = 0.3  # V_G-modelの係数
+n = 2        # Power-Law modelの係数
+
+# モデル式の定義
+def E_model(A, E_a, T, beta, E, k):
+    return A * np.exp(E_a / (k * T)) * np.exp(-beta * E)
+
+def one_over_E_model(A, E_a, T, G, E, k):
+    return A * np.exp(E_a / (k * T)) * np.exp(G / E)
+
+def VG_model(A, E_a, T, gamma, V_G, k):
+    return A * np.exp(E_a / (k * T)) * np.exp(-gamma * V_G)
+
+def power_law_model(A, E_a, T, V_G, n, k):
+    return A * np.exp(E_a / (k * T)) * V_G**(-n)
+
+# TTF計算
+TTF_E_model = E_model(A, E_a, T, beta, E, k)
+TTF_one_over_E_model = one_over_E_model(A, E_a, T, G, E, k)
+TTF_VG_model = VG_model(A, E_a, T, gamma, V_G, k)
+TTF_power_law_model = power_law_model(A, E_a, T, V_G, n, k)
+
+# 結果表示
+print(f"TTF (E-model): {TTF_E_model:.4e} hours")
+print(f"TTF (1/E-model): {TTF_one_over_E_model:.4e} hours")
+print(f"TTF (V_G-model): {TTF_VG_model:.4e} hours")
+print(f"TTF (Power-Law model): {TTF_power_law_model:.4e} hours")
