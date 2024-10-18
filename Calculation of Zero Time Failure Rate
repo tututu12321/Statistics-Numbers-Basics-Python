@@ -1,0 +1,25 @@
+# 関数の定義
+def calculate_dl(Y, T):
+    # 不良混入率の計算
+    DL = 1 - Y * (1 - T)
+    return DL
+
+def calculate_fdl(Y, T, alpha, beta):
+    # ゼロタイム不良率の計算
+    DL = calculate_dl(Y, T)
+    FDL = alpha * DL + beta
+    return FDL
+
+# パラメータの設定
+Y = 0.9  # 歩留まり (仮定値)
+T = 0.05  # テストパターンの故障検出率 (仮定値)
+alpha = 0.8  # 仮定する係数α
+beta = 0.1   # 仮定する係数β
+
+# 不良混入率とゼロタイム不良率の計算
+DL = calculate_dl(Y, T)
+FDL = calculate_fdl(Y, T, alpha, beta)
+
+# 結果の表示
+print(f"不良混入率 (DL): {DL:.4f}")
+print(f"ゼロタイム不良率 (FDL): {FDL:.4f}")
