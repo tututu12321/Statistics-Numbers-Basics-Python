@@ -1,0 +1,39 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 時間範囲の定義
+time = np.linspace(0, 100, 1000)
+
+# 初期故障期、偶発故障期、摩耗故障期のパラメータ
+# 故障率の関数を時間ごとに定義
+def failure_rate(t):
+    # 初期故障期: t < 20 (減少)
+    if t < 20:
+        return 0.1 + 0.9 * np.exp(-0.3 * t)
+    # 偶発故障期: 20 <= t < 80 (一定)
+    elif 20 <= t < 80:
+        return 0.1
+    # 摩耗故障期: t >= 80 (増加)
+    else:
+        return 0.1 + 0.05 * (t - 80)**2
+
+# 故障率を計算
+failure_rates = np.array([failure_rate(t) for t in time])
+
+# グラフの作成
+plt.figure(figsize=(10, 6))
+plt.plot(time, failure_rates, label='Failure Rate', color='b')
+
+# グラフの装飾
+plt.title('Bathtub Curve (Failure Rate Over Time)')
+plt.xlabel('Time')
+plt.ylabel('Failure Rate')
+plt.grid(True)
+
+# 初期故障期、偶発故障期、摩耗故障期の領域を塗り分け
+plt.axvspan(0, 20, color='red', alpha=0.3, label='Early Failure Period (Initial)')
+plt.axvspan(20, 80, color='green', alpha=0.3, label='Random Failure Period (Normal)')
+plt.axvspan(80, 100, color='yellow', alpha=0.3, label='Wear-Out Failure Period (Late)')
+
+plt.legend()
+plt.show()
