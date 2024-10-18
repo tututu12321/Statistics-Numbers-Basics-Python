@@ -1,0 +1,41 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import chi2, t
+
+# カイ2乗分布 (Chi-Squared Distribution)
+def plot_chi2_distribution(df):
+    x = np.linspace(0, 10, 500)
+    chi2_pdf = chi2.pdf(x, df)
+    
+    plt.figure(figsize=(8, 6))
+    plt.plot(x, chi2_pdf, label=f'Chi-Squared (k={df})', color='blue')
+    plt.title('Chi-Squared Distribution PDF')
+    plt.xlabel('x')
+    plt.ylabel('Density')
+    plt.grid(True)
+    plt.legend()
+    plt.show()
+
+# t分布 (Student's t-Distribution)
+def plot_t_distribution(df):
+    x = np.linspace(-5, 5, 500)
+    t_pdf = t.pdf(x, df)
+    
+    plt.figure(figsize=(8, 6))
+    plt.plot(x, t_pdf, label=f't-Distribution (v={df})', color='red')
+    plt.title("t-Distribution PDF")
+    plt.xlabel('t')
+    plt.ylabel('Density')
+    plt.grid(True)
+    plt.legend()
+    plt.show()
+
+# 自由度の設定
+df_chi2 = 3  # カイ2乗分布の自由度 (degrees of freedom for Chi-Squared distribution)
+df_t = 10    # t分布の自由度 (degrees of freedom for t-distribution)
+
+# カイ2乗分布のプロット
+plot_chi2_distribution(df_chi2)
+
+# t分布のプロット
+plot_t_distribution(df_t)
