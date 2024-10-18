@@ -1,0 +1,39 @@
+from math import comb
+import numpy as np
+
+# 超幾何分布に基づく不良品の確率計算
+def hypergeometric_distribution(N, n, x, p):
+    Np = int(N * p)
+    return (comb(Np, x) * comb(N - Np, n - x)) / comb(N, n)
+
+# 合格率L(p)の計算
+def acceptance_probability(N, n, c, p):
+    acceptance_prob = 0
+    for x in range(c + 1):
+        acceptance_prob += hypergeometric_distribution(N, n, x, p)
+    return acceptance_prob
+
+# パラメータ設定
+N = 1000  # ロットサイズ (Lot size)
+n = 10    # サンプルサイズ (Sample size)
+c = 2     # 許容される不良品数 (Acceptance number)
+p = 0.05  # 不良率 (Defective rate)
+
+# 合格率L(p)の計算
+L_p = acceptance_probability(N, n, c, p)
+
+# 結果の表示
+print(f"合格率 L(p) = {L_p:.5f}")
+
+# 不良率に対する合格率のグラフ
+p_values = np.linspace(0, 0.2, 100)
+L_p_values = [acceptance_probability(N, n, c, p_val) for p_val in p_values]
+
+import matplotlib.pyplot as plt
+plt.plot(p_values, L_p_values, label="Acceptance Probability")
+plt.xlabel('Defective Rate (p)')
+plt.ylabel('Acceptance Probability (L(p))')
+plt.title('OC Curve based on Hypergeometric Distribution')
+plt.grid(True)
+plt.legend()
+plt.show()
