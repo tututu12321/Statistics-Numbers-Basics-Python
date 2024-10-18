@@ -1,0 +1,39 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import norm
+
+# サンプルデータを生成 (Generate Sample Data)
+data = np.random.normal(loc=10, scale=2, size=100)  # 平均10、標準偏差2の正規分布からデータを生成
+
+# 平均を計算 (Calculate Mean)
+mean = np.mean(data)
+
+# 母分散を計算 (Calculate Population Variance)
+population_variance = np.var(data)
+
+# 標本分散（不偏）を計算 (Calculate Sample Variance (Unbiased))
+sample_variance = np.var(data, ddof=1)
+
+# 標準誤差を計算 (Calculate Standard Error)
+standard_error = np.std(data, ddof=1) / np.sqrt(len(data))
+
+# 正規分布の確率密度関数（PDF）を計算 (Calculate Probability Density Function (PDF) of Normal Distribution)
+x = np.linspace(min(data), max(data), 100)  # データの最小値から最大値までの範囲で100点を生成
+pdf = norm.pdf(x, mean, np.std(data))  # PDFを計算
+
+# 分布をプロット (Plot the Distribution)
+plt.figure(figsize=(8, 6))
+plt.hist(data, bins=20, density=True, alpha=0.6, color='g', label='Data Histogram')  # データのヒストグラム
+plt.plot(x, pdf, color='red', label='Normal Distribution PDF')  # 正規分布のPDFをプロット
+plt.title('Normal Distribution and Sample Data', fontsize=16)  # タイトル
+plt.xlabel('Data values', fontsize=14)  # X軸ラベル
+plt.ylabel('Density', fontsize=14)  # Y軸ラベル
+plt.legend(fontsize=12)  # 凡例
+plt.grid(True)  # グリッドを表示
+plt.show()  # プロットを表示
+
+# 結果を表示 (Display results)
+print(f"Mean: {mean}")  # 平均を表示
+print(f"Population Variance: {population_variance}")  # 母分散を表示
+print(f"Sample Variance (Unbiased): {sample_variance}")  # 標本分散を表示
+print(f"Standard Error: {standard_error}")  # 標準誤差を表示
