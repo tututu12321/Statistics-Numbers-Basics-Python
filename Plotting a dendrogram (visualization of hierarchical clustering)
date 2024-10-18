@@ -1,0 +1,26 @@
+import scipy.cluster.hierarchy as sch
+from sklearn.cluster import AgglomerativeClustering
+
+# デンドログラムのプロット (階層的クラスタリングの可視化)
+plt.subplot(1, 2, 2)
+dendrogram = sch.dendrogram(sch.linkage(X, method='ward'))
+plt.title("Dendrogram (Hierarchical Clustering)")
+plt.xlabel('Data Points')
+plt.ylabel('Euclidean Distances')
+plt.grid(True)
+
+# 階層的クラスタリングの実行 (Agglomerative Clustering)
+hc = AgglomerativeClustering(n_clusters=4, affinity='euclidean', linkage='ward')
+y_hc = hc.fit_predict(X)
+
+# クラスタリング結果の可視化
+plt.figure(figsize=(5, 5))
+plt.scatter(X[:, 0], X[:, 1], c=y_hc, s=50, cmap='viridis')
+plt.title("Hierarchical Clustering")
+plt.xlabel('Feature 1')
+plt.ylabel('Feature 2')
+plt.grid(True)
+
+# グラフの表示
+plt.tight_layout()
+plt.show()
