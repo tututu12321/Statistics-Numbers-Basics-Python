@@ -1,0 +1,52 @@
+import numpy as np
+import pymc3 as pm
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# 1. データの生成 (シミュレーション)
+# 真のパラメータを設定 (Generating simulated data)
+np.random.seed(42)
+true_intercept = 1
+true_slope = 2
+x = np.linspace(0, 10, 100)
+y = true_intercept + true_slope * x + np.random.normal(scale=1, size=len(x))
+
+# 2. ベイズ線形回帰モデルの定義 (Bayesian linear regression model)
+with pm.Model() as model:
+    # 事前分布の設定 (Priors)
+    intercept = pm.Normal("intercept", mu=0, sigma=10)
+    slope = pm.Normal("slope", mu=0, sigma=10)
+    sigma = pm.HalfNormal("sigma", sigma=1)
+
+    # 線形モデルの期待値 (Linear model)
+    mu = intercept + slope * x
+
+    # 尤度関数 (Likelihood)
+    likelihood = pm.Normal("y", mu=mu, sigma=sigma, observed=y)
+
+    # 3. MCMC (マルコフ連鎖モンテカルロ法) の実行 (Running MCMC)
+    trace = pm.sample(2000, return_inferencedata=False)
+
+# 4. 事後分布の分析 (Analyzing posterior distributions)
+pm.traceplot(trace)
+plt.show()
+
+# 5. パラメータの推定結果 (Summary of the results)
+summary = pm.summary(trace)
+print(summary)
+
+# 6. 事後予測 (Posterior predictive check)
+with model:
+    posterior_predictive = pm.sample_posterior_predictive(trace)
+
+# 7. 結果のプロット (Plotting the results)
+plt.figure(figsize=(8, 5))
+plt.plot(x, y, 'b.', label="Data")
+plt.plot(x, posterior_predictive['y'].mean(axis=0), 'r-', label="Bayesian fit")
+plt.fill_between(x, np.percentile(posterior_predictive['y'], 2.5, axis=0),
+                 np.percentile(posterior_predictive['y'], 97.5, axis=0), color='red', alpha=0.3, label="95% CI")
+plt.xlabel("x")
+plt.ylabel("y")
+plt.title("Bayesian Linear Regression")
+plt.legend()
+plt.show()
