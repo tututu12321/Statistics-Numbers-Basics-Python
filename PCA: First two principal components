@@ -1,0 +1,32 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
+
+# ダミーデータの生成 (多変量正規分布に従うデータ)
+np.random.seed(0)
+mean = [0, 0, 0]
+cov = [[1, 0.8, 0.7], [0.8, 1, 0.6], [0.7, 0.6, 1]]  # 共分散行列
+data = np.random.multivariate_normal(mean, cov, 100)
+
+# データの標準化
+scaler = StandardScaler()
+data_standardized = scaler.fit_transform(data)
+
+# PCAの実行
+pca = PCA(n_components=3)  # 主成分を3つに設定
+pca.fit(data_standardized)
+
+# 各主成分の分散説明率
+explained_variance = pca.explained_variance_ratio_
+print("各主成分の分散説明率: ", explained_variance)
+
+# 主成分分析結果を2Dプロット
+principal_components = pca.transform(data_standardized)
+plt.figure(figsize=(8, 6))
+plt.scatter(principal_components[:, 0], principal_components[:, 1], c='blue', alpha=0.5)
+plt.title('PCA: First two principal components')
+plt.xlabel('Principal Component 1')
+plt.ylabel('Principal Component 2')
+plt.grid(True)
+plt.show()
