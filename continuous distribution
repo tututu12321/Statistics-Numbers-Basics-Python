@@ -1,0 +1,165 @@
+import numpy as np
+import scipy.stats as stats
+import scipy.special as special  # gammaln は scipy.special モジュールにあります
+import matplotlib.pyplot as plt
+
+# Exponential Distribution (指数分布) - 故障密度関数、信頼度、故障率、平均寿命
+def exponential_distribution(lmbda):
+    """指数分布の関数 / Exponential distribution functions"""
+    mean_life = 1 / lmbda  # 平均寿命 / Mean life
+    t = np.linspace(0, 10 * mean_life, 1000)  # 時間の範囲 / Time range
+    
+    # 故障密度関数 / Failure density function (PDF)
+    f_t = lmbda * np.exp(-lmbda * t)
+    
+    # 信頼度関数 / Reliability function
+    R_t = np.exp(-lmbda * t)
+    
+    # 故障率 / Failure rate
+    h_t = np.full_like(t, lmbda)  # Constant in exponential distribution
+    
+    return t, f_t, R_t, h_t, mean_life
+
+# Weibull Distribution (ワイブル分布) - 故障密度関数、信頼度、故障率、平均寿命、残存率
+def weibull_distribution(k, lmbda):
+    """ワイブル分布の関数 / Weibull distribution functions"""
+    t = np.linspace(0, 10 * lmbda, 1000)  # 時間の範囲 / Time range
+    
+    # 故障密度関数 / Failure density function (PDF)
+    f_t = (k / lmbda) * (t / lmbda)**(k - 1) * np.exp(-(t / lmbda)**k)
+    
+    # 信頼度関数 / Reliability function
+    R_t = np.exp(-(t / lmbda)**k)
+    
+    # 故障率 / Failure rate
+    h_t = (k / lmbda) * (t / lmbda)**(k - 1)
+    
+    # 平均寿命 / Mean life (Mean of Weibull)
+    mean_life = lmbda * np.exp(special.gammaln(1 + 1/k))  # 修正: scipy.special.gammaln
+    
+    # 残存率 / Survival rate
+    S_t = 1 - R_t
+    
+    return t, f_t, R_t, h_t, mean_life, S_t
+
+# Lognormal Distribution (対数正規分布) - 故障密度関数、信頼度、メディアン、平均寿命
+def lognormal_distribution(mu, sigma):
+    """対数正規分布の関数 / Lognormal distribution functions"""
+    t = np.linspace(0, 100, 1000)  # 時間の範囲 / Time range
+    
+    # 故障密度関数 / Failure density function (PDF)
+    f_t = stats.lognorm.pdf(t, s=sigma, scale=np.exp(mu))
+    
+    # 信頼度関数 / Reliability function
+    R_t = stats.lognorm.sf(t, s=sigma, scale=np.exp(mu))
+    
+    # 故障率 / Failure rate
+    h_t = f_t / R_t
+    
+    # 平均寿命 / Mean life
+    mean_life = np.exp(mu + sigma**2 / 2)
+    
+    # メディアン / Median
+    median_life = np.exp(mu)
+    
+    return t, f_t, R_t, h_t, mean_life, median_life
+
+# Gamma Distribution (ガンマ分布) - 故障密度関数、信頼度、故障率、平均寿命
+def gamma_distribution(k, theta):
+    """ガンマ分布の関数 / Gamma distribution functions"""
+    t = np.linspace(0, 10 * k * theta, 1000)  # 時間の範囲 / Time range
+    
+    # 故障密度関数 / Failure density function (PDF)
+    f_t = stats.gamma.pdf(t, a=k, scale=theta)
+    
+    # 信頼度関数 / Reliability function
+    R_t = stats.gamma.sf(t, a=k, scale=theta)
+    
+    # 故障率 / Failure rate
+    h_t = f_t / R_t
+    
+    # 平均寿命 / Mean life
+    mean_life = k * theta
+    
+    return t, f_t, R_t, h_t, mean_life
+
+# Normal Distribution (正規分布) - 故障密度関数、信頼度、故障率、平均寿命
+def normal_distribution(mu, sigma):
+    """正規分布の関数 / Normal distribution functions"""
+    t = np.linspace(mu - 5*sigma, mu + 5*sigma, 1000)  # 時間の範囲 / Time range
+    
+    # 故障密度関数 / Failure density function (PDF)
+    f_t = stats.norm.pdf(t, loc=mu, scale=sigma)
+    
+    # 信頼度関数 / Reliability function
+    R_t = stats.norm.sf(t, loc=mu, scale=sigma)
+    
+    # 故障率 / Failure rate
+    h_t = f_t / R_t
+    
+    # 平均寿命 / Mean life (Equal to mu for normal distribution)
+    mean_life = mu
+    
+    return t, f_t, R_t, h_t, mean_life
+
+# 各分布の結果をプロットする関数 / Function to plot results of each distribution
+def plot_distribution(t, f_t, R_t, h_t, mean_life, title):
+    """プロット関数 / Plot function"""
+    plt.figure(figsize=(12, 8))
+    
+    # 故障密度関数 / Failure density function
+    plt.subplot(2, 2, 1)
+    plt.plot(t, f_t, label="Failure Density Function (f(t))")
+    plt.title(f"{title} - Failure Density Function")
+    plt.xlabel("Time")
+    plt.ylabel("f(t)")
+    plt.grid(True)
+    
+    # 信頼度関数 / Reliability function
+    plt.subplot(2, 2, 2)
+    plt.plot(t, R_t, label="Reliability Function (R(t))")
+    plt.title(f"{title} - Reliability Function")
+    plt.xlabel("Time")
+    plt.ylabel("R(t)")
+    plt.grid(True)
+    
+    # 故障率 / Failure rate
+    plt.subplot(2, 2, 3)
+    plt.plot(t, h_t, label="Failure Rate (h(t))")
+    plt.title(f"{title} - Failure Rate")
+    plt.xlabel("Time")
+    plt.ylabel("h(t)")
+    plt.grid(True)
+    
+    # 平均寿命 / Mean life
+    plt.subplot(2, 2, 4)
+    plt.axhline(y=mean_life, color='r', linestyle='--', label="Mean Life")
+    plt.title(f"{title} - Mean Life: {mean_life:.2f}")
+    plt.xlabel("Time")
+    plt.ylabel("Mean Life")
+    plt.grid(True)
+    
+    plt.tight_layout()
+    plt.show()
+
+# サンプルの実行例 / Example of execution
+
+# 指数分布 / Exponential distribution
+t, f_t, R_t, h_t, mean_life = exponential_distribution(lmbda=0.5)
+plot_distribution(t, f_t, R_t, h_t, mean_life, "Exponential Distribution")
+
+# ワイブル分布 / Weibull distribution
+t, f_t, R_t, h_t, mean_life, S_t = weibull_distribution(k=1.5, lmbda=2)
+plot_distribution(t, f_t, R_t, h_t, mean_life, "Weibull Distribution")
+
+# 対数正規分布 / Lognormal distribution
+t, f_t, R_t, h_t, mean_life, median_life = lognormal_distribution(mu=1, sigma=0.5)
+plot_distribution(t, f_t, R_t, h_t, mean_life, "Lognormal Distribution")
+
+# ガンマ分布 / Gamma distribution
+t, f_t, R_t, h_t, mean_life = gamma_distribution(k=2, theta=1)
+plot_distribution(t, f_t, R_t, h_t, mean_life, "Gamma Distribution")
+
+# 正規分布 / Normal distribution
+t, f_t, R_t, h_t, mean_life = normal_distribution(mu=5, sigma=1)
+plot_distribution(t, f_t, R_t, h_t, mean_life, "Normal Distribution")
