@@ -1,0 +1,205 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from statsmodels.tsa.seasonal import seasonal_decompose
+
+# 1. 時系列データの作成 (Creating Time Series Data)
+# ダミーの時系列データ (Generating dummy time series data)
+np.random.seed(42)
+date_range = pd.date_range(start='2020-01-01', periods=100, freq='D')
+data = np.random.randn(100).cumsum() + 50  # ランダムな累積データ (Random cumulative data)
+
+# 時系列データとしてのDataFrameを作成 (Create DataFrame as time series data)
+time_series = pd.DataFrame({'Date': date_range, 'Value': data})
+time_series.set_index('Date', inplace=True)
+
+### 2. 時系列グラフの作成 (Plotting Time Series Data)
+plt.figure(figsize=(10, 6))
+plt.plot(time_series['Value'], label='Time Series Data')
+plt.title('2. Time Series Plot')
+plt.xlabel('Date')
+plt.ylabel('Value')
+plt.grid(True)
+plt.legend()
+plt.show()
+
+### 3. 指数化 (Indexing Time Series)
+# 基準日を指定し、その日を基準として指数化 (Index the series with a reference date)
+reference_value = time_series['Value'].iloc[0]  # 基準日の値 (First value as reference)
+indexed_series = (time_series['Value'] / reference_value) * 100  # 基準日を100とした指数化 (Index with the first value as 100)
+
+# 指数化データのプロット (Plotting Indexed Time Series)
+plt.figure(figsize=(10, 6))
+plt.plot(indexed_series, label='Indexed Time Series')
+plt.title('3. Indexed Time Series (Base 100)')
+plt.xlabel('Date')
+plt.ylabel('Index (Base 100)')
+plt.grid(True)
+plt.legend()
+plt.show()
+
+### 4. 移動平均 (Moving Average)
+# 窓幅を7日とした移動平均 (7-day moving average)
+moving_avg = time_series['Value'].rolling(window=7).mean()
+
+# 移動平均のプロット (Plotting Moving Average)
+plt.figure(figsize=(10, 6))
+plt.plot(time_series['Value'], label='Original Data')
+plt.plot(moving_avg, label='7-Day Moving Average', color='red')
+plt.title('4. Moving Average')
+plt.xlabel('Date')
+plt.ylabel('Value')
+plt.grid(True)
+plt.legend()
+plt.show()
+
+### 5. 変化率の計算 (Calculating Rate of Change)
+# 前日比での変化率を計算 (Calculating daily rate of change)
+change_rate = time_series['Value'].pct_change() * 100  # 変化率 (%) (Rate of change in percentage)
+
+# 変化率のプロット (Plotting Rate of Change)
+plt.figure(figsize=(10, 6))
+plt.plot(change_rate, label='Rate of Change (%)', color='green')
+plt.title('5. Rate of Change')
+plt.xlabel('Date')
+plt.ylabel('Change Rate (%)')
+plt.grid(True)
+plt.legend()
+plt.show()
+
+### 季節の影響を除いた時系列データ (Handling Seasonality in import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from statsmodels.tsa.seasonal import seasonal_decompose
+
+# 1. 時系列データの作成 (Creating Time Series Data)
+# ダミーの時系列データ (Generating dummy time series data)
+np.random.seed(42)
+date_range = pd.date_range(start='2020-01-01', periods=100, freq='D')
+data = np.random.randn(100).cumsum() + 50  # ランダムな累積データ (Random cumulative data)
+
+# 時系列データとしてのDataFrameを作成 (Create DataFrame as time series data)
+time_series = pd.DataFrame({'Date': date_range, 'Value': data})
+time_series.set_index('Date', inplace=True)
+
+### 2. 時系列グラフの作成 (Plotting Time Series Data)
+plt.figure(figsize=(10, 6))
+plt.plot(time_series['Value'], label='Time Series Data')
+plt.title('2. Time Series Plot')
+plt.xlabel('Date')
+plt.ylabel('Value')
+plt.grid(True)
+plt.legend()
+plt.show()
+
+### 3. 指数化 (Indexing Time Series)
+# 基準日を指定し、その日を基準として指数化 (Index the series with a reference date)
+reference_value = time_series['Value'].iloc[0]  # 基準日の値 (First value as reference)
+indexed_series = (time_series['Value'] / reference_value) * 100  # 基準日を100とした指数化 (Index with the first value as 100)
+
+# 指数化データのプロット (Plotting Indexed Time Series)
+plt.figure(figsize=(10, 6))
+plt.plot(indexed_series, label='Indexed Time Series')
+plt.title('3. Indexed Time Series (Base 100)')
+plt.xlabel('Date')
+plt.ylabel('Index (Base 100)')
+plt.grid(True)
+plt.legend()
+plt.show()
+
+### 4. 移動平均 (Moving Average)
+# 窓幅を7日とした移動平均 (7-day moving average)
+moving_avg = time_series['Value'].rolling(window=7).mean()
+
+# 移動平均のプロット (Plotting Moving Average)
+plt.figure(figsize=(10, 6))
+plt.plot(time_series['Value'], label='Original Data')
+plt.plot(moving_avg, label='7-Day Moving Average', color='red')
+plt.title('4. Moving Average')
+plt.xlabel('Date')
+plt.ylabel('Value')
+plt.grid(True)
+plt.legend()
+plt.show()
+
+### 5. 変化率の計算 (Calculating Rate of Change)
+# 前日比での変化率を計算 (Calculating daily rate of change)
+change_rate = time_series['Value'].pct_change() * 100  # 変化率 (%) (Rate of change in percentage)
+
+# 変化率のプロット (Plotting Rate of Change)
+plt.figure(figsize=(10, 6))
+plt.plot(change_rate, label='Rate of Change (%)', color='green')
+plt.title('5. Rate of Change')
+plt.xlabel('Date')
+plt.ylabel('Change Rate (%)')
+plt.grid(True)
+plt.legend()
+plt.show()
+
+### 季節の影響を除いた時系列データ (Handling Seasonality in Time Series)
+
+### 1. 時系列データの分解 (Decomposing Time Series Data)
+# 加法モデルで分解 (Additive model decomposition)
+decomposition = seasonal_decompose(time_series['Value'], model='additive', period=30)
+
+# 分解された要素をプロット (Plot the decomposed components)
+decomposition.plot()
+plt.suptitle('Decomposition of Time Series (Additive Model)', fontsize=16)
+plt.show()
+
+### 2. 加法モデルと乗法モデル (Additive vs. Multiplicative Model)
+# 乗法モデルで分解 (Multiplicative model decomposition)
+decomposition_mult = seasonal_decompose(time_series['Value'], model='multiplicative', period=30)
+
+# 乗法モデルのプロット (Plot the decomposed components for multiplicative model)
+decomposition_mult.plot()
+plt.suptitle('Decomposition of Time Series (Multiplicative Model)', fontsize=16)
+plt.show()
+
+### 3. 季節変動の対処方法 (Handling Seasonality)
+# 季節変動を除去した時系列データ (Removing seasonality by subtracting seasonal component)
+seasonal_adjusted = time_series['Value'] - decomposition.seasonal
+
+# 季節変動を除去したデータのプロット (Plotting seasonally adjusted data)
+plt.figure(figsize=(10, 6))
+plt.plot(time_series['Value'], label='Original Data')
+plt.plot(seasonal_adjusted, label='Seasonally Adjusted Data', color='purple')
+plt.title('Seasonally Adjusted Time Series')
+plt.xlabel('Date')
+plt.ylabel('Value')
+plt.grid(True)
+plt.legend()
+plt.show()
+
+### 1. 時系列データの分解 (Decomposing Time Series Data)
+# 加法モデルで分解 (Additive model decomposition)
+decomposition = seasonal_decompose(time_series['Value'], model='additive', period=30)
+
+# 分解された要素をプロット (Plot the decomposed components)
+decomposition.plot()
+plt.suptitle('Decomposition of Time Series (Additive Model)', fontsize=16)
+plt.show()
+
+### 2. 加法モデルと乗法モデル (Additive vs. Multiplicative Model)
+# 乗法モデルで分解 (Multiplicative model decomposition)
+decomposition_mult = seasonal_decompose(time_series['Value'], model='multiplicative', period=30)
+
+# 乗法モデルのプロット (Plot the decomposed components for multiplicative model)
+decomposition_mult.plot()
+plt.suptitle('Decomposition of Time Series (Multiplicative Model)', fontsize=16)
+plt.show()
+
+### 3. 季節変動の対処方法 (Handling Seasonality)
+# 季節変動を除去した時系列データ (Removing seasonality by subtracting seasonal component)
+seasonal_adjusted = time_series['Value'] - decomposition.seasonal
+
+# 季節変動を除去したデータのプロット (Plotting seasonally adjusted data)
+plt.figure(figsize=(10, 6))
+plt.plot(time_series['Value'], label='Original Data')
+plt.plot(seasonal_adjusted, label='Seasonally Adjusted Data', color='purple')
+plt.title('Seasonally Adjusted Time Series')
+plt.xlabel('Date')
+plt.ylabel('Value')
+plt.grid(True)
+plt.legend()
+plt.show()
