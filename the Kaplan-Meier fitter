@@ -1,0 +1,33 @@
+import numpy as np
+import pandas as pd
+from lifelines import KaplanMeierFitter
+import matplotlib.pyplot as plt
+
+# サンプルデータ: 患者の生存時間と検閲情報を含むデータ
+# Sample data: Contains survival times of patients and censoring information
+data = {
+    'duration': [5, 6, 6, 2, 4, 3, 7, 8, 8, 9],  # 生存時間 (Survival time)
+    'event_observed': [1, 0, 1, 1, 0, 1, 1, 0, 1, 1]  # イベントが観測されたか (1: death, 0: censored)
+}
+
+# データフレームに変換 (Convert data into a DataFrame)
+df = pd.DataFrame(data)
+
+# カプラン―マイヤーのフィッターを初期化 (Initialize the Kaplan-Meier fitter)
+kmf = KaplanMeierFitter()
+
+# データに基づいてモデルをフィット (Fit the model to the data)
+kmf.fit(durations=df['duration'], event_observed=df['event_observed'])
+
+# 生存曲線を表示 (Plot the survival curve)
+plt.figure(figsize=(8, 6))
+kmf.plot_survival_function()
+plt.title('Kaplan-Meier Survival Curve')
+plt.xlabel('Time (days)')
+plt.ylabel('Survival Probability')
+plt.grid(True)
+plt.show()
+
+# 生存率の信頼区間を表示 (Display the confidence intervals for the survival probabilities)
+print("Confidence intervals:")
+print(kmf.confidence_interval_)
