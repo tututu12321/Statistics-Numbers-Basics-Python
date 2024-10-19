@@ -1,0 +1,63 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import StandardScaler
+
+### 1. Lorenz Curve and Gini Coefficient (ローレンツ曲線とジニ係数)
+
+# サンプルデータ（収入分布などの例） (Sample data, e.g., income distribution)
+income = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+
+# 1.1 ローレンツ曲線の計算 (Calculating the Lorenz Curve)
+def lorenz_curve(data):
+    sorted_data = np.sort(data)  # データを昇順にソート (Sort the data in ascending order)
+    cum_data = np.cumsum(sorted_data)  # 累積和を計算 (Cumulative sum of the data)
+    lorenz_curve = cum_data / cum_data[-1]  # 累積和を正規化 (Normalize cumulative sum)
+    lorenz_curve = np.insert(lorenz_curve, 0, 0)  # 0を追加してプロットのための始点を設定 (Insert 0 at the start for plotting)
+    return lorenz_curve
+
+# 1.2 ジニ係数の計算 (Calculating the Gini Coefficient)
+def gini_coefficient(data):
+    lorenz = lorenz_curve(data)
+    area_under_curve = np.trapz(lorenz, dx=1/len(data))  # 曲線下の面積 (Area under the Lorenz curve)
+    gini = 1 - 2 * area_under_curve  # ジニ係数の計算 (Gini coefficient formula)
+    return gini
+
+# ローレンツ曲線のプロット (Plotting the Lorenz Curve)
+lorenz = lorenz_curve(income)
+x_lorenz = np.linspace(0, 1, len(lorenz))
+
+plt.figure(figsize=(8, 6))
+plt.plot(x_lorenz, lorenz, label='Lorenz Curve')
+plt.plot([0, 1], [0, 1], linestyle='--', color='gray', label='Perfect Equality')
+plt.title('Lorenz Curve and Gini Coefficient')
+plt.xlabel('Cumulative Share of Population')
+plt.ylabel('Cumulative Share of Income')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+# ジニ係数の表示 (Display the Gini Coefficient)
+gini = gini_coefficient(income)
+print(f"Gini Coefficient: {gini:.4f}")
+
+### 2. Standardized Variables (基準化変数)
+
+# サンプルデータ (Sample data, e.g., heights or weights in different units)
+data = np.array([[150, 60], [160, 65], [170, 70], [180, 75], [190, 80]])
+
+# 2.1 基準化 (Standardization)
+scaler = StandardScaler()
+standardized_data = scaler.fit_transform(data)
+
+# 基準化された変数の表示 (Display the standardized variables)
+print("\nStandardized Data (基準化変数):")
+print(standardized_data)
+
+# 基準化されたデータをプロット (Plotting the standardized data)
+plt.figure(figsize=(8, 6))
+plt.scatter(standardized_data[:, 0], standardized_data[:, 1], color='blue')
+plt.title('Standardized Variables')
+plt.xlabel('Standardized Feature 1')
+plt.ylabel('Standardized Feature 2')
+plt.grid(True)
+plt.show()
