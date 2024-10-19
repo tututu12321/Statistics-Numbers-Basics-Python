@@ -1,0 +1,29 @@
+import numpy as np
+from scipy import stats
+
+# クロス集計表のデータ (Contingency table data)
+# 例として、病気の有無と治療法の効果を表すデータ
+# Example data: Contingency table showing disease presence and treatment effect
+# [[治療成功 (treatment success), 治療失敗 (treatment failure)],
+#  [対照群成功 (control success), 対照群失敗 (control failure)]]
+table = np.array([[8, 2],  # 治療群 (Treatment group)
+                  [1, 5]])  # 対照群 (Control group)
+
+# フィッシャーの直接確率法を実行 (Perform Fisher's Exact Test)
+# This test checks whether there is a significant association between the two variables
+oddsratio, p_value = stats.fisher_exact(table)
+
+# 検定結果を表示 (Display the test results)
+print(f"Odds ratio: {oddsratio:.4f}")
+print(f"P-value: {p_value:.4f}")
+
+# 検定結果の解釈 (Interpretation of the test results)
+alpha = 0.05  # 有意水準 (Significance level)
+if p_value < alpha:
+    print("The null hypothesis is rejected: There is a significant association between the variables.")
+    # 帰無仮説を棄却 (帰無仮説は2つの変数が独立していると仮定)
+    # Reject the null hypothesis (The null hypothesis assumes the two variables are independent)
+else:
+    print("Fail to reject the null hypothesis: There is no significant association between the variables.")
+    # 帰無仮説を棄却できない場合 (2つの変数間に有意な関連がないと判断)
+    # Fail to reject the null hypothesis (No significant association between the variables)
