@@ -1,0 +1,65 @@
+import numpy as np
+from scipy import stats
+import bootstrapped.bootstrap as bs
+import bootstrapped.stats_functions as bs_stats
+import matplotlib.pyplot as plt
+
+### 9-1-2. Wilcoxon Test (ウィルコクソン検定)
+# Sample data
+group1 = [20, 22, 19, 24, 21, 23]
+group2 = [30, 31, 29, 32, 35, 33]
+
+# Wilcoxon rank-sum test for two independent samples
+stat_wilcoxon, p_value_wilcoxon = stats.ranksums(group1, group2)
+print(f"Wilcoxon Test: Statistic={stat_wilcoxon:.4f}, p-value={p_value_wilcoxon:.4f}")
+
+### 9-2-1. Mood's Test for Median Differences (Mood検定)
+# Mood's test checks the difference in the medians of two samples
+stat_mood, p_value_mood = stats.mood(group1, group2)
+print(f"Mood Test: Statistic={stat_mood:.4f}, p-value={p_value_mood:.4f}")
+
+### 9-2-2. Ansari-Bradley Test for Spread Differences (Ansari-Bradley検定)
+# Ansari-Bradley test for equal variance
+stat_ansari, p_value_ansari = stats.ansari(group1, group2)
+print(f"Ansari-Bradley Test: Statistic={stat_ansari:.4f}, p-value={p_value_ansari:.4f}")
+
+### 9-3. Testing for Differences in Location and Spread (位置と散らばりの違いの検定法)
+# This can be tested using the Levene's test for equal variances
+# Here we test if both the location (mean/median) and spread (variance) are different
+stat_levene, p_value_levene = stats.levene(group1, group2)
+print(f"Levene Test for Location and Spread Differences: Statistic={stat_levene:.4f}, p-value={p_value_levene:.4f}")
+
+### 10-1. Permutation Test (バーミュテーション検定)
+# Permutation test for two independent samples
+def perm_test(group1, group2, num_permutations=10000):
+    observed_diff = np.mean(group1) - np.mean(group2)
+    combined = np.concatenate([group1, group2])
+    count = 0
+    for _ in range(num_permutations):
+        np.random.shuffle(combined)
+        new_group1 = combined[:len(group1)]
+        new_group2 = combined[len(group1):]
+        perm_diff = np.mean(new_group1) - np.mean(new_group2)
+        if abs(perm_diff) >= abs(observed_diff):
+            count += 1
+    p_value_perm = count / num_permutations
+    return observed_diff, p_value_perm
+
+observed_diff, p_value_perm = perm_test(group1, group2)
+print(f"Permutation Test: Observed Difference={observed_diff:.4f}, p-value={p_value_perm:.4f}")
+
+### 10-2. Bootstrap Confidence Intervals (ブートストラップ信頼区間)
+# Bootstrap confidence interval for the difference in means
+def bootstrap_confidence_interval(data, n_iterations=10000, alpha=0.05):
+    bootstrap_samples = [np.mean(np.random.choice(data, size=len(data), replace=True)) for _ in range(n_iterations)]
+    lower_bound = np.percentile(bootstrap_samples, 100 * alpha / 2)
+    upper_bound = np.percentile(bootstrap_samples, 100 * (1 - alpha / 2))
+    return lower_bound, upper_bound
+
+lower, upper = bootstrap_confidence_interval(np.array(group1) - np.array(group2))
+print(f"Bootstrap Confidence Interval: Lower={lower:.4f}, Upper={upper:.4f}")
+
+### 10-3. Bootstrap Hypothesis Testing (ブートストラップ検定)
+# Bootstrap hypothesis test comparing means
+bootstrap_result = bs.bootstrap(np.array(group1) - np.array(group2), stat_func=bs_stats.mean)
+print(f"Bootstrap Test for Difference in Means: Confidence Interval=({bootstrap_result.lower_bound:.4f}, {bootstrap_result.upper_bound:.4f})")
