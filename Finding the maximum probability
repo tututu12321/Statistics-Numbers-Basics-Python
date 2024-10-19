@@ -1,0 +1,42 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 1. 漸化式の定義 (Defining the recurrence relation)
+# 例: ある試行が成功する確率pで繰り返し行われたときの漸化式
+# p_n+1 = p_n * (1 - p_n)
+
+def recurrence_relation(p0, n_iter):
+    """
+    Recurrence relation for probability in repeated trials.
+    p0: 初期確率 (Initial probability)
+    n_iter: 試行の数 (Number of iterations)
+    """
+    probabilities = [p0]  # 初期確率をリストに保存 (Start with the initial probability)
+    
+    for i in range(n_iter):
+        p_next = probabilities[-1] * (1 - probabilities[-1])  # 漸化式 (Recurrence formula)
+        probabilities.append(p_next)
+    
+    return probabilities
+
+# 2. 初期確率と試行回数の設定 (Set initial probability and number of trials)
+initial_prob = 0.5  # 初期確率 (Initial probability)
+n_trials = 50  # 試行回数 (Number of trials)
+
+# 3. 漸化式を使って確率のリストを計算 (Compute the list of probabilities using the recurrence relation)
+probabilities = recurrence_relation(initial_prob, n_trials)
+
+# 4. 確率の最大値を取得 (Finding the maximum probability)
+max_prob = max(probabilities)
+print(f"Maximum Probability: {max_prob:.4f}")
+
+# 5. 確率のプロット (Plotting the probabilities)
+plt.figure(figsize=(8, 6))
+plt.plot(probabilities, marker='o', linestyle='-', color='blue', label='Probability')
+plt.axhline(y=max_prob, color='red', linestyle='--', label=f'Max Probability = {max_prob:.4f}')
+plt.title('Recurrence Relation for Probability in Repeated Trials')
+plt.xlabel('Iteration')
+plt.ylabel('Probability')
+plt.grid(True)
+plt.legend()
+plt.show()
