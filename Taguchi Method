@@ -1,0 +1,68 @@
+import numpy as np
+import scipy.stats as stats
+import matplotlib.pyplot as plt
+
+# 第2種の過誤と検出力 (Type II Error and Power Function)
+# 帰無仮説が誤って棄却されない場合のエラーを第2種の過誤と呼ぶ
+# Type II Error occurs when we fail to reject a false null hypothesis
+
+# 仮説検定におけるパラメータの設定
+# Setting parameters for hypothesis testing
+alpha = 0.05  # 有意水準 (Significance level)
+n = 100  # サンプルサイズ (Sample size)
+p_null = 0.5  # 帰無仮説の比率 (Null hypothesis proportion)
+p_alternative = 0.6  # 対立仮説の比率 (Alternative hypothesis proportion)
+
+# 標準誤差の計算 (Calculating the standard error)
+se = np.sqrt(p_null * (1 - p_null) / n)
+
+# 正規分布の臨界値を計算 (Calculating the critical value from the normal distribution)
+z_alpha = stats.norm.ppf(1 - alpha)
+
+# 臨界点 (Critical point under the null hypothesis)
+critical_value = p_null + z_alpha * se
+
+# 第2種の過誤 (Beta) を計算 (Calculate Type II Error (Beta))
+se_alt = np.sqrt(p_alternative * (1 - p_alternative) / n)
+z_beta = (critical_value - p_alternative) / se_alt
+beta = stats.norm.cdf(z_beta)
+
+# 検出力 (Power Function) を計算 (Calculate Power)
+power = 1 - beta
+
+print(f"Type II Error (Beta): {beta:.4f}")
+print(f"Power of the test: {power:.4f}")
+
+# 比率の推定 (Proportion Estimation) with 正規近似 (Normal Approximation)
+# 正規分布で比率を推定 (Estimate proportion using normal approximation)
+
+# 比率推定の例 (Example of proportion estimation)
+p_hat = 0.55  # 観測された比率 (Observed proportion)
+z = stats.norm.ppf(1 - alpha / 2)  # 95%信頼区間のz値 (Z-value for 95% confidence interval)
+
+# 信頼区間の計算 (Calculating the confidence interval)
+ci_lower = p_hat - z * np.sqrt((p_hat * (1 - p_hat)) / n)
+ci_upper = p_hat + z * np.sqrt((p_hat * (1 - p_hat)) / n)
+
+print(f"95% Confidence Interval for the proportion: ({ci_lower:.4f}, {ci_upper:.4f})")
+
+### タグチメソッド (Taguchi Method)
+# タグチメソッドは品質工学における最適化手法
+# Taguchi method is used for optimization in quality engineering
+
+# タグチメソッドにおけるSN比 (Signal-to-Noise Ratio, S/N ratio)
+# "Small is better" の場合のS/N比を計算
+# Calculate S/N ratio for "Small is better" case
+
+# 観測されたデータ (Observed data)
+observed_data = np.array([1.2, 0.9, 1.1, 1.3, 1.0])
+
+# SN比の計算 (Calculating S/N ratio)
+mean_squared = np.mean(observed_data ** 2)
+sn_ratio = -10 * np.log10(mean_squared)
+
+print(f"Taguchi Method: S/N ratio (Small is better) = {sn_ratio:.4f} dB")
+
+# タグチメソッドに基づく最適化の例
+# Example of optimization based on Taguchi method
+# 条件設定を行い、応答値を最適化する場合、品質向上のためにS/N比が最大になる条件を探す
