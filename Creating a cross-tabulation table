@@ -1,0 +1,44 @@
+import numpy as np
+import pandas as pd
+from scipy import stats
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# 疫学的なデータセットを作成（例: 喫煙と病気の関係）
+# Creating an example dataset (e.g., relationship between smoking and disease)
+data = {'Smoking': ['Yes', 'No', 'Yes', 'No', 'Yes', 'No', 'Yes', 'No'],
+        'Disease': ['Yes', 'Yes', 'No', 'No', 'Yes', 'No', 'No', 'Yes']}
+
+# データフレームに変換 (Convert the data into a DataFrame)
+df = pd.DataFrame(data)
+
+# クロス集計表の作成 (Creating a cross-tabulation table)
+# クロス表は「喫煙」と「病気」の関係を表す
+# Crosstab shows the relationship between Smoking and Disease
+cross_tab = pd.crosstab(df['Smoking'], df['Disease'])
+
+print("Cross-tabulation table:")
+print(cross_tab)
+
+# カイ二乗検定 (Chi-squared test for independence)
+# 独立性の検定は、2つのカテゴリ変数が独立であるかどうかを検定する
+# The chi-squared test checks whether two categorical variables are independent
+chi2, p_value, dof, expected = stats.chi2_contingency(cross_tab)
+
+# 結果を表示 (Display the results)
+print(f"\nChi-squared test statistic: {chi2:.4f}")
+print(f"P-value: {p_value:.4f}")
+print(f"Degrees of freedom: {dof}")
+print(f"Expected frequencies table:\n{expected}")
+
+# 検定結果の解釈 (Interpretation of the test results)
+alpha = 0.05
+if p_value < alpha:
+    print("\nReject the null hypothesis: The variables are not independent.")
+else:
+    print("\nFail to reject the null hypothesis: The variables are independent.")
+
+### クロス集計表の可視化 (Visualizing the cross-tabulation table)
+sns.heatmap(cross_tab, annot=True, fmt="d", cmap="YlGnBu")
+plt.title('Cross-tabulation Heatmap (Smoking vs Disease)')
+plt.show()
