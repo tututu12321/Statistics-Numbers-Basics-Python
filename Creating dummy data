@@ -1,0 +1,67 @@
+import numpy as np
+import pandas as pd
+import statsmodels.api as sm
+import matplotlib.pyplot as plt
+
+# ダミーデータの作成 (Creating dummy data)
+np.random.seed(42)
+
+# 年齢、収入、性別（0: 女性, 1: 男性）などのサンプルデータを作成 (Creating sample data for age, income, and gender)
+data = pd.DataFrame({
+    'age': np.random.randint(20, 60, 100),  # 年齢 (Age)
+    'income': np.random.randint(2000, 5000, 100),  # 収入 (Income)
+    'gender': np.random.choice([0, 1], 100),  # 性別 (Gender: 0=female, 1=male)
+    'group': np.random.choice(['A', 'B'], 100)  # グループ (Group: A or B)
+})
+
+# グループA, Bをダミー変数に変換 (Creating dummy variables for group A, B)
+data = pd.get_dummies(data, columns=['group'], drop_first=True)  # グループBを基準に (Drop group A to avoid multicollinearity)
+
+### 1. 一時的ダミー変数を含む回帰分析 (Temporary Dummy Variables)
+# 性別の影響を回帰分析に含める (Including gender as a dummy variable in the regression)
+X_temp_dummy = data[['age', 'gender', 'group_B']]  # 一時的ダミー変数 (Temporary dummy variables)
+y = data['income']
+
+# 定数項を含めた回帰モデル (Adding a constant for the intercept)
+X_temp_dummy = sm.add_constant(X_temp_dummy)
+
+# 回帰モデルの作成 (Fit the regression model)
+model_temp_dummy = sm.OLS(y, X_temp_dummy).fit()
+
+# 結果の表示 (Display the results)
+print("1. Regression with Temporary Dummy Variables (一時的ダミー変数):")
+print(model_temp_dummy.summary())
+
+### 2. 定数項をダミー変数として含める回帰分析 (Dummy Variables as Intercept)
+# 定数項を性別ごとに変える (Different intercepts for each gender)
+X_const_dummy = pd.get_dummies(data[['age', 'gender']], drop_first=False)
+X_const_dummy = sm.add_constant(X_const_dummy)  # 定数項 (Add constant term)
+
+# 回帰モデルの作成 (Fit the regression model)
+model_const_dummy = sm.OLS(y, X_const_dummy).fit()
+
+# 結果の表示 (Display the results)
+print("\n2. Regression with Dummy Variables as Intercept (定数項ダミー変数):")
+print(model_const_dummy.summary())
+
+### 3. 係数ダミー変数を含める回帰分析 (Dummy Variables as Coefficients)
+# 性別ごとに係数を持つ回帰モデル (Interaction terms between gender and age)
+X_coef_dummy = X_temp_dummy.copy()  # 定数項と一時的ダミー変数をコピー (Copy previous dummy variables)
+X_coef_dummy['gender_age_interaction'] = X_coef_dummy['gender'] * X_coef_dummy['age']  # 性別と年齢の交互作用項 (Interaction between gender and age)
+
+# 回帰モデルの作成 (Fit the regression model)
+model_coef_dummy = sm.OLS(y, X_coef_dummy).fit()
+
+# 結果の表示 (Display the results)
+print("\n3. Regression with Dummy Variables as Coefficients :")
+print(model_coef_dummy.summary())
+
+### プロット (Plot the relationship between age and income)
+plt.figure(figsize=(8, 6))
+plt.scatter(data['age'], data['income'], color='blue', label='Data points')
+plt.xlabel('Age')
+plt.ylabel('Income')
+plt.title('Age vs Income with Gender Dummy Variables')
+plt.grid(True)
+plt.legend()
+plt.show()
