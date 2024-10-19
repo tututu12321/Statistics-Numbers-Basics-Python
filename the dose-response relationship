@@ -1,0 +1,60 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+import statsmodels.api as sm
+
+# 1. Dose-Response Relationship (用量反応関係)
+
+# Dosage (drug amount) and response (effectiveness) data
+dosage = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])  # Dosage
+response = np.array([0, 0, 0, 0, 1, 1, 1, 1, 1, 1])  # Response
+
+# Plot the dose-response relationship
+plt.figure(figsize=(8, 6))
+plt.scatter(dosage, response, color='blue', label='Data points')
+plt.title('Dose-Response Relationship')
+plt.xlabel('Dosage (Drug Amount)')
+plt.ylabel('Response (Effectiveness)')
+plt.grid(True)
+plt.legend()
+plt.show()
+
+# 2. Threshold Identification (閾値判別)
+
+# Assume a threshold where response starts at dosage >= 4
+threshold = 4
+for dose, resp in zip(dosage, response):
+    if dose >= threshold:
+        print(f"Threshold at dosage = {dose}: Response = {resp}")
+
+# 3. Logistic Regression with 2x2 Contingency Table (ロジスティック回帰)
+
+# Contingency table data (Dosage and Effect)
+data = {'Dosage': [0, 0, 1, 1, 2, 2, 3, 3, 4, 4],
+        'Effect': [0, 1, 0, 1, 0, 1, 0, 1, 1, 1]}  # Effect (0 = no effect, 1 = effect)
+
+# Convert to DataFrame
+df = pd.DataFrame(data)
+
+# Logistic regression fitting
+X = sm.add_constant(df['Dosage'])  # Add constant term for intercept
+y = df['Effect']  # Response variable
+model = sm.Logit(y, X)  # Logistic regression model
+result = model.fit()  # Fit the model
+
+# Display the logistic regression summary
+print(result.summary())
+
+# Plot the logistic regression curve
+dosage_range = np.linspace(0, 4, 100)
+logit_curve = result.predict(sm.add_constant(dosage_range))
+
+plt.figure(figsize=(8, 6))
+plt.scatter(df['Dosage'], df['Effect'], color='blue', label='Data points')
+plt.plot(dosage_range, logit_curve, color='red', label='Logistic Curve')
+plt.title('Logistic Regression Curve')
+plt.xlabel('Dosage (Drug Amount)')
+plt.ylabel('Probability of Effect')
+plt.legend()
+plt.grid(True)
+plt.show()
