@@ -1,0 +1,72 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
+from sklearn.feature_selection import SelectKBest, f_regression
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.datasets import make_regression
+import pandas as pd
+
+### 1. Linear Regression (折れ線回帰)
+# サンプルデータの作成 (Creating sample data)
+X_dosage = np.array([1, 2, 3, 4, 5]).reshape(-1, 1)  # 用量 (Dosage)
+y_effect = np.array([1.5, 3.6, 4.5, 6.1, 7.8])      # 効果 (Effectiveness)
+
+# 折れ線回帰モデルの作成とフィット (Fitting a linear regression model)
+model_lr = LinearRegression()
+model_lr.fit(X_dosage, y_effect)
+
+# 回帰直線の予測 (Predicted values from regression line)
+y_pred_lr = model_lr.predict(X_dosage)
+
+# 折れ線回帰のプロット (Plot the linear regression)
+plt.figure(figsize=(8, 6))
+plt.scatter(X_dosage, y_effect, color='blue', label='Data points')
+plt.plot(X_dosage, y_pred_lr, color='red', label='Regression line')
+plt.title('Linear Regression')
+plt.xlabel('Dosage (Drug Amount)')
+plt.ylabel('Effectiveness (Response)')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+# 回帰係数と切片を表示 (Display the regression coefficients and intercept)
+print(f"Linear Regression Coefficient (傾き): {model_lr.coef_[0]}")
+print(f"Linear Regression Intercept (切片): {model_lr.intercept_}")
+
+### 2. Feature Selection (変量選択)
+# ダミーデータの作成 (Creating dummy data for feature selection)
+X_features, y_target = make_regression(n_samples=100, n_features=5, noise=0.1, random_state=42)
+
+# 変量選択 (Feature selection)
+# SelectKBestで、上位2つの変数を選択 (Select the top 2 features)
+selector = SelectKBest(score_func=f_regression, k=2)
+X_new = selector.fit_transform(X_features, y_target)
+
+# 選ばれた変数を表示 (Display the selected features)
+print("\nSelected features' scores for feature selection:")
+print(selector.scores_)
+
+print("Indices of selected features:")
+print(selector.get_support(indices=True))
+
+### 3. Interaction Terms (交互作用項)
+# 2つの変数のサンプルデータ (Sample data with two features)
+X_interaction_data = np.array([[1, 2], [2, 3], [3, 4], [4, 5], [5, 6]])
+y_interaction_target = np.array([3, 5, 7, 9, 11])  # 予測対象 (Target variable)
+
+# PolynomialFeaturesで交互作用項を作成 (Create interaction terms using PolynomialFeatures)
+interaction = PolynomialFeatures(degree=2, interaction_only=True, include_bias=False)
+X_interaction = interaction.fit_transform(X_interaction_data)
+
+# 交互作用項を含む回帰モデルを作成 (Fit a linear regression model with interaction terms)
+model_interaction = LinearRegression()
+model_interaction.fit(X_interaction, y_interaction_target)
+
+# 結果を表示 (Display the results)
+print("\nCoefficients with interaction terms (交互作用項を含む回帰係数):")
+print(model_interaction.coef_)
+print("Intercept (切片):", model_interaction.intercept_)
+
+# 元の特徴と交互作用項を表示 (Display original features and interaction terms)
+print("\nOriginal features and interaction terms (元の特徴と交互作用項):")
+print(pd.DataFrame(X_interaction, columns=['X1', 'X2', 'X1*X2']))
