@@ -1,0 +1,36 @@
+import pandas as pd
+import numpy as np
+from scipy.stats import chi2_contingency
+
+# ====== データの生成 / Generate sample data ======
+# Simulate a dataset for smokers, non-smokers, and disease outcomes
+np.random.seed(42)
+
+# Generate categorical data for 100 individuals
+data = {
+    "Smoker": np.random.choice(["Smoker", "Non-Smoker"], size=100),
+    "Disease": np.random.choice(["Disease", "No Disease"], size=100)
+}
+
+# Create a DataFrame
+df = pd.DataFrame(data)
+
+# ====== クロス集計の実行 / Perform Cross-tabulation ======
+cross_tab = pd.crosstab(df["Smoker"], df["Disease"])
+print("クロス集計 (Cross-tabulation):\n", cross_tab)
+
+# ====== オッズ比の計算 / Calculate Odds Ratio ======
+# Extract values from the cross-tabulation
+a = cross_tab.loc["Smoker", "Disease"]  # Smokers with disease
+b = cross_tab.loc["Smoker", "No Disease"]  # Smokers without disease
+c = cross_tab.loc["Non-Smoker", "Disease"]  # Non-smokers with disease
+d = cross_tab.loc["Non-Smoker", "No Disease"]  # Non-smokers without disease
+
+# Calculate the odds ratio
+odds_ratio = (a * d) / (b * c)
+print(f"\nオッズ比 (Odds Ratio): {odds_ratio:.2f}")
+
+# ====== カイ二乗検定の実行 / Perform Chi-square test ======
+chi2, p, dof, expected = chi2_contingency(cross_tab)
+print(f"\nカイ二乗統計量 (Chi-square statistic): {chi2:.2f}")
+print(f"p値 (p-value): {p:.2f}")
