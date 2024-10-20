@@ -1,0 +1,38 @@
+import numpy as np
+
+# 標準偏差を計算する関数
+def calculate_standard_deviation(data):
+    n = len(data)
+    mean_value = np.mean(data)
+    variance = np.sum((data - mean_value) ** 2) / (n - 1)
+    return np.sqrt(variance)
+
+# 標準不確かさを計算する関数
+def calculate_standard_uncertainty(standard_deviation, n):
+    return standard_deviation / np.sqrt(n)
+
+# 拡張不確かさを計算する関数
+def calculate_expanded_uncertainty(standard_uncertainty, coverage_factor=2):
+    return coverage_factor * standard_uncertainty
+
+# 合成標準不確かさを計算する関数
+def calculate_combined_uncertainty(uncertainties):
+    return np.sqrt(np.sum(np.square(uncertainties)))
+
+# サンプルデータ（複数回の計測値）
+data = np.array([19.8, 20.1, 19.9, 20.0, 19.9])
+
+# 計算の実行
+standard_deviation = calculate_standard_deviation(data)
+standard_uncertainty = calculate_standard_uncertainty(standard_deviation, len(data))
+expanded_uncertainty = calculate_expanded_uncertainty(standard_uncertainty)
+
+# 複数の不確かさを持つ場合の合成標準不確かさの例
+uncertainties = np.array([0.01, 0.02, 0.015])  # 例として3つの不確かさ
+combined_uncertainty = calculate_combined_uncertainty(uncertainties)
+
+# 結果を表示
+print(f"Standard Deviation: {standard_deviation:.4f}")
+print(f"Standard Uncertainty: {standard_uncertainty:.4f}")
+print(f"Expanded Uncertainty (95% CL): {expanded_uncertainty:.4f}")
+print(f"Combined Uncertainty: {combined_uncertainty:.4f}")
