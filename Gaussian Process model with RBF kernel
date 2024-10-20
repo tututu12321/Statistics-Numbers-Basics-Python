@@ -1,0 +1,47 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.gaussian_process import GaussianProcessRegressor
+from sklearn.gaussian_process.kernels import RBF, ConstantKernel as C
+
+# サンプルデータを作成
+# Generate sample data
+def f(x):
+    """True function."""
+    return np.sin(x)
+
+# トレーニングデータ
+# Training data
+X_train = np.atleast_2d(np.linspace(0, 10, 10)).T
+y_train = f(X_train).ravel()
+
+# テストデータ
+# Test data
+X_test = np.atleast_2d(np.linspace(0, 10, 100)).T
+
+# ガウス過程回帰モデルを作成
+# Gaussian Process model with RBF kernel
+# カーネル = 定数カーネル * RBFカーネル
+# Kernel = Constant kernel * RBF kernel
+kernel = C(1.0, (1e-4, 1e1)) * RBF(1.0, (1e-4, 1e1))
+gp = GaussianProcessRegressor(kernel=kernel, n_restarts_optimizer=10)
+
+# モデルのフィッティング
+# Fit the model
+gp.fit(X_train, y_train)
+
+# テストデータに対して予測
+# Make prediction on the test data
+y_pred, sigma = gp.predict(X_test, return_std=True)
+
+# プロット
+# Plotting
+plt.figure()
+plt.plot(X_test, f(X_test), 'r:', label="True function")
+plt.errorbar(X_train, y_train, fmt='r.', markersize=10, label="Training data")
+plt.plot(X_test, y_pred, 'b-', label="Prediction")
+plt.fill_between(X_test.ravel(), y_pred - 1.96 * sigma, y_pred + 1.96 * sigma,
+                 alpha=0.2, color='k', label="Confidence interval")
+plt.xlabel("Input")
+plt.ylabel("Output")
+plt.legend()
+plt.show()
