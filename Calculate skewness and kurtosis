@@ -1,0 +1,41 @@
+import numpy as np
+from scipy.stats import skew, kurtosis
+import matplotlib.pyplot as plt
+
+# ====== データの生成 / Generate sample data ======
+np.random.seed(42)
+data_normal = np.random.normal(0, 1, 1000)  # 標準正規分布に従うデータ / Standard normal distribution
+data_skewed = np.random.exponential(scale=2, size=1000)  # 歪んだデータ / Skewed data (exponential distribution)
+
+# ====== 歪度と尖度の計算 / Calculate skewness and kurtosis ======
+skew_normal = skew(data_normal)
+kurtosis_normal = kurtosis(data_normal)
+
+skew_skewed = skew(data_skewed)
+kurtosis_skewed = kurtosis(data_skewed)
+
+# 結果の表示 / Display results
+print(f"正規分布データの歪度 (Skewness of normal data): {skew_normal:.2f}")
+print(f"正規分布データの尖度 (Kurtosis of normal data): {kurtosis_normal:.2f}")
+print(f"歪んだデータの歪度 (Skewness of skewed data): {skew_skewed:.2f}")
+print(f"歪んだデータの尖度 (Kurtosis of skewed data): {kurtosis_skewed:.2f}")
+
+# ====== データのヒストグラムをプロット / Plot histograms ======
+plt.figure(figsize=(12, 6))
+
+# 正規分布データのプロット / Plot for normal data
+plt.subplot(1, 2, 1)
+plt.hist(data_normal, bins=30, color='blue', alpha=0.7)
+plt.title("Histogram of Normal Data")
+plt.xlabel("Value")
+plt.ylabel("Frequency")
+
+# 歪んだデータのプロット / Plot for skewed data
+plt.subplot(1, 2, 2)
+plt.hist(data_skewed, bins=30, color='green', alpha=0.7)
+plt.title("Histogram of Skewed Data")
+plt.xlabel("Value")
+plt.ylabel("Frequency")
+
+plt.tight_layout()
+plt.show()
