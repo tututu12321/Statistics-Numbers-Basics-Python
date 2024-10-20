@@ -1,0 +1,70 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# ====== Monte Carlo Parameters ======
+num_samples = 1000  # Number of Monte Carlo simulations
+resistor_nominal = 1e3  # 1k ohm resistor
+capacitor_nominal = 0.01e-6  # 0.01uF capacitor
+
+# Resistor tolerance and capacitor tolerance (as described in the example)
+resistor_tolerance = 0.005  # 0.5%
+capacitor_tolerance = 0.2  # 20%
+
+# Monte Carlo generation for resistor and capacitor values
+resistor_values = resistor_nominal * (1 + np.random.uniform(-resistor_tolerance, resistor_tolerance, num_samples))
+capacitor_values = capacitor_nominal * (1 + np.random.uniform(-capacitor_tolerance, capacitor_tolerance, num_samples))
+
+# Frequency range for the Bode plot (logarithmically spaced)
+frequencies = np.logspace(1, 6, 500)  # 10 Hz to 1 MHz
+
+# Function to calculate the transfer function H(jω)
+def transfer_function(f, R, C):
+    omega = 2 * np.pi * f  # Angular frequency
+    return 1 / (1 + 1j * omega * R * C)
+
+# Prepare lists for storing magnitude and phase responses
+magnitude_responses = []
+phase_responses = []
+
+# Calculate Bode plot for each Monte Carlo sample
+for R, C in zip(resistor_values, capacitor_values):
+    H = transfer_function(frequencies, R, C)
+    magnitude_responses.append(20 * np.log10(np.abs(H)))  # Magnitude in dB
+    phase_responses.append(np.angle(H, deg=True))  # Phase in degrees
+
+# ====== Plot the Bode Plot ======
+plt.figure(figsize=(10, 10))
+
+# Magnitude plot
+plt.subplot(2, 1, 1)
+for magnitude in magnitude_responses:
+    plt.plot(frequencies, magnitude, color='blue', alpha=0.05)  # Semi-transparent lines for each sample
+plt.xscale('log')
+plt.title('Bode Plot - Magnitude (Monte Carlo Simulation)')
+plt.xlabel('Frequency (Hz)')
+plt.ylabel('Magnitude (dB)')
+plt.grid(True)
+
+# Phase plot
+plt.subplot(2, 1, 2)
+for phase in phase_responses:
+    plt.plot(frequencies, phase, color='red', alpha=0.05)  # Semi-transparent lines for each sample
+plt.xscale('log')
+plt.title('Bode Plot - Phase (Monte Carlo Simulation)')
+plt.xlabel('Frequency (Hz)')
+plt.ylabel('Phase (degrees)')
+plt.grid(True)
+
+plt.tight_layout()
+plt.show()
+
+# ====== Histogram Plot for Cutoff Frequencies ======
+cutoff_frequencies = 1 / (2 * np.pi * resistor_values * capacitor_values)
+
+plt.figure(figsize=(10, 6))
+plt.hist(cutoff_frequencies / 1e3, bins=30, color='blue', alpha=0.7)
+plt.title('Cutoff Frequency Distribution (Monte Carlo Simulation)')
+plt.xlabel('Cutoff Frequency (kHz)')
+plt.ylabel('Frequency')
+plt.grid(True)
+plt.show()
