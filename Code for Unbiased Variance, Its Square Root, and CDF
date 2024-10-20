@@ -1,0 +1,48 @@
+import numpy as np
+from scipy.stats import norm
+import matplotlib.pyplot as plt
+
+# ====== サンプルデータの生成 / Generate sample data ======
+np.random.seed(42)
+data = np.random.normal(loc=10, scale=3, size=100)  # 平均10、標準偏差3の正規分布データ / Normal distribution data
+
+# ====== 不偏分散の計算 / Calculate unbiased variance ======
+mean = np.mean(data)  # 標本平均 / Sample mean
+n = len(data)  # サンプルサイズ / Sample size
+
+# 不偏分散 (Unbiased variance)
+unbiased_variance = np.sum((data - mean) ** 2) / (n - 1)
+print(f"不偏分散 (Unbiased variance): {unbiased_variance:.2f}")
+
+# ====== 不偏分散の平方根（標準偏差）/ Square root of unbiased variance (Standard deviation) ======
+unbiased_std = np.sqrt(unbiased_variance)
+print(f"不偏分散の平方根 (Unbiased standard deviation): {unbiased_std:.2f}")
+
+# ====== 累積分布関数 (CDF) の計算とプロット / Calculate and plot CDF ======
+# Calculate the empirical CDF for the sample data
+x_values = np.sort(data)  # データをソート / Sort the data
+cdf_values = np.arange(1, n + 1) / n  # CDFの値 / CDF values
+
+# 理論的な正規分布のCDFと比較 / Compare with the theoretical CDF of the normal distribution
+x_range = np.linspace(min(data), max(data), 500)
+cdf_theoretical = norm.cdf(x_range, loc=np.mean(data), scale=np.std(data))
+
+# プロット / Plot
+plt.figure(figsize=(10, 6))
+
+# 累積分布関数 (CDF) のプロット / Empirical CDF plot
+plt.plot(x_values, cdf_values, marker="o", linestyle="none", label="Empirical CDF")
+
+# 理論的なCDFのプロット / Theoretical CDF plot (Normal Distribution)
+plt.plot(x_range, cdf_theoretical, label="Theoretical Normal CDF", color="red")
+
+# グラフの設定 / Graph settings
+plt.title("Empirical CDF and Theoretical CDF")
+plt.xlabel("x")
+plt.ylabel("Cumulative Probability")
+plt.legend()
+plt.grid(True)
+
+# グラフを表示 / Show the plot
+plt.tight_layout()
+plt.show()
