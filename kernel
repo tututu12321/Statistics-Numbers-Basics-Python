@@ -1,0 +1,50 @@
+import numpy as np
+from scipy.spatial.distance import cdist
+from scipy.special import kv
+
+# ガウシアンカーネル（RBFカーネル）
+def rbf_kernel(x1, x2, gamma=1.0):
+    distance = cdist(x1, x2, 'sqeuclidean')
+    return np.exp(-gamma * distance)
+
+# Maternカーネル
+def matern_kernel(x1, x2, nu=1.5, length_scale=1.0):
+    distance = cdist(x1, x2, 'euclidean') / length_scale
+    if nu == 0.5:
+        return np.exp(-distance)
+    elif nu == 1.5:
+        return (1.0 + np.sqrt(3) * distance) * np.exp(-np.sqrt(3) * distance)
+    elif nu == 2.5:
+        return (1.0 + np.sqrt(5) * distance + 5.0/3.0 * distance**2) * np.exp(-np.sqrt(5) * distance)
+    else:
+        raise ValueError("Matern kernel currently supports nu = 0.5, 1.5, or 2.5")
+
+# 周期カーネル（Periodic kernel）
+def periodic_kernel(x1, x2, length_scale=1.0, period=1.0):
+    distance = cdist(x1, x2, 'euclidean')
+    return np.exp(-2 * (np.sin(np.pi * distance / period) ** 2) / length_scale**2)
+
+# 線形カーネル（Linear kernel）
+def linear_kernel(x1, x2):
+    return np.dot(x1, x2.T)
+
+# 多項式カーネル（Polynomial kernel）
+def polynomial_kernel(x1, x2, degree=3, coef0=1, gamma=1.0):
+    return (gamma * np.dot(x1, x2.T) + coef0) ** degree
+
+# 指数カーネル（Exponential kernel）
+def exponential_kernel(x1, x2, length_scale=1.0):
+    distance = cdist(x1, x2, 'euclidean')
+    return np.exp(-distance / length_scale)
+
+# サンプルデータ
+x1 = np.array([[1, 2], [3, 4], [5, 6]])
+x2 = np.array([[7, 8], [9, 10], [11, 12]])
+
+# カーネルの計算
+print("RBF Kernel:\n", rbf_kernel(x1, x2))
+print("Matern Kernel (nu=1.5):\n", matern_kernel(x1, x2, nu=1.5))
+print("Periodic Kernel:\n", periodic_kernel(x1, x2))
+print("Linear Kernel:\n", linear_kernel(x1, x2))
+print("Polynomial Kernel (degree=3):\n", polynomial_kernel(x1, x2, degree=3))
+print("Exponential Kernel:\n", exponential_kernel(x1, x2))
