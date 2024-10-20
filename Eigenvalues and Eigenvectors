@@ -1,0 +1,61 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# ====== Step 1: Eigenvalues and Eigenvectors ======
+# Define a square matrix
+A = np.array([[4, -2],
+              [-2, 1]])
+
+# Compute eigenvalues and eigenvectors
+eigenvalues, eigenvectors = np.linalg.eig(A)
+
+# Display the eigenvalues and eigenvectors
+print("固有値 (Eigenvalues):", eigenvalues)
+print("固有ベクトル (Eigenvectors):")
+print(eigenvectors)
+
+# ====== PCA Algorithm ======
+
+# Simulated dataset (3-dimensional data)
+np.random.seed(0)
+X = np.random.randn(100, 3)  # 100 samples, 3 dimensions
+
+# 1. データの標準化 / Step 1: Standardize the data
+X_centered = X - np.mean(X, axis=0)  # Centering the data by subtracting the mean
+
+# 2. 共分散行列の計算 / Step 2: Compute the covariance matrix
+cov_matrix = np.cov(X_centered, rowvar=False)  # Covariance matrix (shape: 3x3)
+
+# 3. 固有値と固有ベクトルの計算 / Step 3: Compute eigenvalues and eigenvectors
+eigenvalues_pca, eigenvectors_pca = np.linalg.eig(cov_matrix)
+
+# 4. 固有値の降順でソート / Step 4: Sort eigenvalues and eigenvectors
+idx = np.argsort(eigenvalues_pca)[::-1]  # Sort eigenvalues in descending order
+eigenvalues_pca = eigenvalues_pca[idx]
+eigenvectors_pca = eigenvectors_pca[:, idx]
+
+# 5. 上位 k 個の固有ベクトルを選択 / Step 5: Select the top k eigenvectors
+k = 2  # Select top 2 principal components
+eigenvectors_pca_topk = eigenvectors_pca[:, :k]
+
+# 6. データを低次元空間に射影 / Step 6: Project data onto lower-dimensional space
+X_pca = np.dot(X_centered, eigenvectors_pca_topk)
+
+# 結果を表示 / Display the results
+print("PCA固有値 (Eigenvalues for PCA):", eigenvalues_pca)
+print("PCA固有ベクトル (Eigenvectors for PCA):")
+print(eigenvectors_pca)
+
+# ====== プロット / Plotting PCA Results ======
+plt.figure(figsize=(8, 6))
+
+# Plotting the 2 principal components
+plt.scatter(X_pca[:, 0], X_pca[:, 1], color='blue', label='Projected Data (PCA)')
+plt.title("PCA - Projected Data")
+plt.xlabel("Principal Component 1")
+plt.ylabel("Principal Component 2")
+plt.grid(True)
+plt.legend()
+
+# Show the plot
+plt.show()
