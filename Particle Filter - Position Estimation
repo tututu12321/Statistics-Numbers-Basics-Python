@@ -1,0 +1,58 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# パーティクルの数
+num_particles = 1000
+
+# 真の状態と観測
+true_position = 0
+true_velocity = 1
+measurements = []
+
+# パーティクルの初期化
+particles = np.random.normal(loc=true_position, scale=1.0, size=num_particles)
+weights = np.ones(num_particles) / num_particles
+
+# シミュレーションパラメータ
+num_steps = 50
+process_noise = 0.1
+measurement_noise = 2.0
+
+# 観測と推定結果のリスト
+estimated_positions = []
+
+for t in range(num_steps):
+    # 真の状態の更新（システムの動作）
+    true_position += true_velocity + np.random.normal(0, process_noise)
+    
+    # ノイズのある観測を生成
+    measurement = true_position + np.random.normal(0, measurement_noise)
+    measurements.append(measurement)
+
+    # パーティクルの状態を予測
+    particles += np.random.normal(0, process_noise, size=num_particles)
+    
+    # 重みの更新（観測に基づく重み付け）
+    weights *= np.exp(-0.5 * ((particles - measurement) ** 2) / measurement_noise**2)
+    weights += 1e-300  # 数値的に安定化するため
+    weights /= np.sum(weights)  # 正規化
+
+    # 状態の推定（重み付け平均）
+    estimated_position = np.sum(weights * particles)
+    estimated_positions.append(estimated_position)
+
+    # リサンプリング (重みの再選定)
+    indices = np.random.choice(range(num_particles), size=num_particles, p=weights)
+    particles = particles[indices]
+    weights = np.ones(num_particles) / num_particles
+
+# 結果のプロット
+plt.figure(figsize=(10, 6))
+plt.plot(measurements, label='Measured Position', linestyle='dashed', color='red')
+plt.plot(estimated_positions, label='Estimated Position (Particle Filter)', color='blue')
+plt.title('Particle Filter - Position Estimation')
+plt.xlabel('Time Step')
+plt.ylabel('Position')
+plt.legend()
+plt.grid(True)
+plt.show()
