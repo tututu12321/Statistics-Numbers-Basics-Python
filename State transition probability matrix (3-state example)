@@ -1,0 +1,50 @@
+import numpy as np
+import random
+import matplotlib.pyplot as plt
+
+# 状態遷移確率行列 (3状態の例)
+transition_matrix = np.array([[0.1, 0.6, 0.3],
+                              [0.4, 0.4, 0.2],
+                              [0.3, 0.3, 0.4]])
+
+# 状態のラベル
+states = ["A", "B", "C"]
+
+# 初期状態
+initial_state = 0  # 状態Aから開始
+
+# マルコフ過程のシミュレーション
+def markov_process(transition_matrix, initial_state, steps):
+    current_state = initial_state
+    state_history = [current_state]
+
+    for _ in range(steps):
+        # 次の状態を選ぶ（現在の状態に基づいて）
+        next_state = np.random.choice([0, 1, 2], p=transition_matrix[current_state])
+        state_history.append(next_state)
+        current_state = next_state
+
+    return state_history
+
+# シミュレーションの実行
+steps = 100  # シミュレーションのステップ数
+state_history = markov_process(transition_matrix, initial_state, steps)
+
+# 状態のラベルに変換
+state_history_labels = [states[state] for state in state_history]
+
+# 結果の出力
+print("State History:", state_history_labels)
+
+# 各状態の遷移をプロット
+time = list(range(steps + 1))
+plt.figure(figsize=(10, 6))
+plt.step(time, state_history, where="mid", label="State Transition", color="blue")
+
+# グラフの設定
+plt.title("Markov Process: State Transitions")
+plt.xlabel("Time Step")
+plt.ylabel("State")
+plt.yticks([0, 1, 2], states)
+plt.grid(True)
+plt.show()
