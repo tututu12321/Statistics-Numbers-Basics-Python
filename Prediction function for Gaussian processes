@@ -1,0 +1,54 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.spatial.distance import cdist
+
+# RBF kernel (Gaussian kernel) function
+def rbf_kernel(X1, X2, length_scale=1.0):
+    sqdist = cdist(X1, X2, 'sqeuclidean')
+    return np.exp(-0.5 * sqdist / length_scale**2)
+
+# ガウス過程の予測関数
+def gaussian_process(X_train, y_train, X_test, noise_variance=1e-5, length_scale=1.0):
+    # カーネル行列の計算
+    K = rbf_kernel(X_train, X_train, length_scale) + noise_variance * np.eye(len(X_train))
+    K_s = rbf_kernel(X_train, X_test, length_scale)
+    K_ss = rbf_kernel(X_test, X_test, length_scale) + noise_variance * np.eye(len(X_test))
+    
+    # カーネル行列の逆行列を計算
+    K_inv = np.linalg.inv(K)
+    
+    # ガウス過程の予測
+    mu_s = K_s.T.dot(K_inv).dot(y_train)  # 予測の平均
+    cov_s = K_ss - K_s.T.dot(K_inv).dot(K_s)  # 予測の共分散
+
+    return mu_s, cov_s
+
+# データの作成
+np.random.seed(42)
+N = 10  # 観測データの数
+X_train = np.random.uniform(-5, 5, (N, 1))  # 訓練データの入力
+y_train = np.sin(X_train) + 0.1 * np.random.randn(N, 1)  # 観測データ（ノイズあり）
+
+# 予測したい新しい点
+X_test = np.linspace(-5, 5, 100).reshape(-1, 1)
+
+# ガウス過程による予測
+mu_s, cov_s = gaussian_process(X_train, y_train, X_test)
+
+# 予測分布の標準偏差
+std_s = np.sqrt(np.diag(cov_s))
+
+# mu_s をフラット化
+mu_s = mu_s.flatten()
+
+# プロット
+plt.figure(figsize=(10, 6))
+plt.plot(X_train, y_train, 'ro', label="Training Data")  # 訓練データ
+plt.plot(X_test, mu_s, 'b-', label="Predictive Mean")  # 予測の平均
+plt.fill_between(X_test.flatten(), mu_s - 2*std_s, mu_s + 2*std_s,
+                 color='blue', alpha=0.2, label="Confidence Interval (±2σ)")  # 信頼区間
+plt.title("Gaussian Process Regression with Noise")
+plt.xlabel("x")
+plt.ylabel("t")
+plt.legend()
+plt.show()
