@@ -1,0 +1,74 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import scipy.stats as stats
+
+# モンテカルロ解析のためのサンプルデータ生成
+# Generate random Monte Carlo samples (for example, SINAD data)
+np.random.seed(42)
+sinad_data = np.random.normal(loc=75, scale=3, size=1000)  # 平均75、標準偏差3のガウス分布
+
+# 仕様境界の設定
+# Define specification limits
+spec_lower = 70  # 仕様下限
+spec_upper = 80  # 仕様上限
+
+# 1. 分布プロット (Distribution plot)
+plt.figure(figsize=(10, 6))
+sns.histplot(sinad_data, bins=30, kde=True, color='blue')
+plt.axvline(np.mean(sinad_data), color='orange', linestyle='--', label='Mean')
+plt.axvline(np.mean(sinad_data) - 3*np.std(sinad_data), color='red', linestyle='--', label='-3σ')
+plt.axvline(np.mean(sinad_data) + 3*np.std(sinad_data), color='green', linestyle='--', label='+3σ')
+plt.axvline(spec_lower, color='red', linestyle=':', label='Lower Spec')
+plt.axvline(spec_upper, color='green', linestyle=':', label='Upper Spec')
+plt.title('SINAD Distribution with Specification Limits')
+plt.xlabel('SINAD')
+plt.ylabel('Frequency')
+plt.legend()
+plt.show()
+
+# 2. Q-Qプロット (Q-Q plot)
+plt.figure(figsize=(6, 6))
+stats.probplot(sinad_data, dist="norm", plot=plt)
+plt.title('Q-Q Plot for SINAD Data')
+plt.xlabel('Theoretical Quantiles')
+plt.ylabel('Sample Quantiles')
+plt.grid(True)
+plt.show()
+
+# 3. 相関関係の散布プロット (Scatter plot for correlation analysis)
+# NM2, NM3, NM4トランジスターの例でミスマッチを考慮
+# Consider random variables NM2, NM3, and NM4 representing mismatch
+nm2 = np.random.normal(loc=0, scale=1, size=1000)
+nm3 = np.random.normal(loc=0, scale=1, size=1000)
+nm4 = np.random.normal(loc=0, scale=1, size=1000)
+offset_voltage = 0.5 * nm2 + 0.5 * nm3  # 仮のオフセット電圧計算
+
+# 散布図をプロット
+# Scatter plot to check correlation
+plt.figure(figsize=(10, 6))
+plt.subplot(1, 2, 1)
+plt.scatter(nm2, offset_voltage, alpha=0.5, label='NM2')
+plt.xlabel('NM2 Mismatch')
+plt.ylabel('Offset Voltage')
+plt.title('NM2 vs Offset Voltage')
+plt.grid(True)
+
+plt.subplot(1, 2, 2)
+plt.scatter(nm3, offset_voltage, alpha=0.5, label='NM3')
+plt.xlabel('NM3 Mismatch')
+plt.ylabel('Offset Voltage')
+plt.title('NM3 vs Offset Voltage')
+plt.grid(True)
+
+plt.tight_layout()
+plt.show()
+
+# 4. 相関係数 (Correlation coefficients)
+corr_nm2 = np.corrcoef(nm2, offset_voltage)[0, 1]
+corr_nm3 = np.corrcoef(nm3, offset_voltage)[0, 1]
+corr_nm4 = np.corrcoef(nm4, offset_voltage)[0, 1]  # 相関しない
+
+print(f"NM2とオフセット電圧の相関関係: r = {corr_nm2:.2f}")
+print(f"NM3とオフセット電圧の相関関係: r = {corr_nm3:.2f}")
+print(f"NM4とオフセット電圧の相関関係: r = {corr_nm4:.2f} (相関なし)")
