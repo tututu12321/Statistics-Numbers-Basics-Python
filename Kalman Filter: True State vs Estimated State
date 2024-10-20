@@ -1,0 +1,87 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# ====== Maximum A Posteriori (MAP) Estimation for Univariate Data ======
+# Simulated data / シミュレーションデータ
+np.random.seed(0)
+n = 100  # Number of data points / データポイントの数
+x_data = np.random.normal(5, 2, n)  # Simulated data with mean 5 and std 2 / 平均5、標準偏差2のシミュレーションデータ
+
+# Prior / 事前分布
+mu_0 = 0  # Prior mean / 事前平均
+tau = 1  # Prior std / 事前標準偏差
+
+# Likelihood variance (known) / 尤度分散（既知）
+sigma = 2  # Likelihood std / 尤度標準偏差
+
+# MAP estimate / MAP推定
+numerator = np.sum(x_data) / sigma**2 + mu_0 / tau**2
+denominator = n / sigma**2 + 1 / tau**2
+theta_map = numerator / denominator
+
+# Display MAP result / MAP推定結果を表示
+print(f"MAP推定: {theta_map:.2f}")
+
+
+# ====== Kalman Filter for Univariate Time Series ======
+# Kalman Filter Parameters / カルマンフィルタのパラメータ
+A = 1  # State transition coefficient / 状態遷移係数
+H = 1  # Observation coefficient / 観測係数
+Q = 1  # Process noise covariance / プロセスノイズの共分散
+R = 4  # Measurement noise covariance / 測定ノイズの共分散
+
+# Initial guesses / 初期推定値
+x0 = 0  # Initial state estimate / 初期状態推定
+P0 = 1  # Initial covariance estimate / 初期共分散推定
+
+# Generate simulated observations / シミュレーション観測データを生成
+true_state = np.zeros(n)  # True state values / 真の状態
+observations = np.zeros(n)  # Noisy observations / ノイズのある観測データ
+true_state[0] = 5
+for t in range(1, n):
+    true_state[t] = A * true_state[t-1] + np.random.normal(0, np.sqrt(Q))  # State evolution with process noise / プロセスノイズを伴う状態の進展
+    observations[t] = H * true_state[t] + np.random.normal(0, np.sqrt(R))  # Observation with measurement noise / 測定ノイズを伴う観測
+
+# Kalman Filter implementation / カルマンフィルタの実装
+x_hat = np.zeros(n)  # Estimated state / 推定された状態
+P = np.zeros(n)  # Covariance estimate / 共分散推定
+
+# Initial conditions / 初期条件
+x_hat[0] = x0
+P[0] = P0
+
+# Kalman Filter iterations / カルマンフィルタの反復
+for t in range(1, n):
+    # Prediction step / 予測ステップ
+    x_hat[t] = A * x_hat[t-1]
+    P[t] = A * P[t-1] * A + Q
+
+    # Kalman Gain / カルマンゲインの計算
+    S = H * P[t] * H + R
+    K = P[t] * H / S
+
+    # Update step / 更新ステップ
+    x_hat[t] = x_hat[t] + K * (observations[t] - H * x_hat[t])
+    P[t] = (1 - K * H) * P[t]
+
+# Display Kalman Filter final result / カルマンフィルタの最終結果を表示
+print(f"Kalmanフィルタ推定: 最終状態推定 {x_hat[-1]:.2f}")
+
+# ====== Plotting the results ======
+plt.figure(figsize=(10, 6))
+
+# True state and estimated state plot / 真の状態と推定状態のプロット
+plt.plot(true_state, label='True State', color='green')
+plt.plot(x_hat, label='Estimated State (Kalman Filter)', color='blue', linestyle='--')
+plt.scatter(range(n), observations, label='Observations', color='red', alpha=0.5)
+
+# Plot labels / プロットのラベル
+plt.title("Kalman Filter: True State vs Estimated State", fontsize=16)
+plt.xlabel("Time Step", fontsize=12)
+plt.ylabel("State Value", fontsize=12)
+plt.legend()
+plt.grid(True)
+
+# Show the plot / プロットを表示
+plt.tight_layout()
+plt.show()
