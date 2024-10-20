@@ -1,0 +1,92 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# サンプル数（シミュレーション回数）
+num_samples = 1000
+
+# プロセスコーナーごとの nMOS, pMOS の駆動電流 (Idsat) のベース値設定
+# nMOS と pMOS の I_{dsat} の基準値を設定 (単位: uA)
+Idsat_nominal_nmos = 100  # nMOS の標準 Idsat
+Idsat_nominal_pmos = 80   # pMOS の標準 Idsat
+
+# プロセスコーナーごとのばらつき (割合)
+# FF: Fast-Fast, SS: Slow-Slow, TT: Typical, SF: Slow-Fast, FS: Fast-Slow
+variation_ff = 0.1  # FF: +10% のばらつき
+variation_ss = -0.1  # SS: -10% のばらつき
+variation_tt = 0.0  # TT: ばらつきなし
+variation_sf_nmos = -0.05  # SF: nMOSは-5%、pMOSは+5% のばらつき
+variation_sf_pmos = 0.05
+variation_fs_nmos = 0.05   # FS: nMOSは+5%、pMOSは-5% のばらつき
+variation_fs_pmos = -0.05
+
+# プロセスコーナーごとのばらつきを反映させた Idsat のサンプル生成
+def generate_idsat_samples(base_nmos, base_pmos, variation_nmos, variation_pmos, num_samples):
+    nmos_idsat = base_nmos * (1 + np.random.normal(variation_nmos, 0.02, num_samples))  # nMOS の Idsat にランダムばらつき
+    pmos_idsat = base_pmos * (1 + np.random.normal(variation_pmos, 0.02, num_samples))  # pMOS の Idsat にランダムばらつき
+    return nmos_idsat, pmos_idsat
+
+# 各コーナーの Idsat サンプルを生成
+idsat_nmos_ff, idsat_pmos_ff = generate_idsat_samples(Idsat_nominal_nmos, Idsat_nominal_pmos, variation_ff, variation_ff, num_samples)
+idsat_nmos_ss, idsat_pmos_ss = generate_idsat_samples(Idsat_nominal_nmos, Idsat_nominal_pmos, variation_ss, variation_ss, num_samples)
+idsat_nmos_tt, idsat_pmos_tt = generate_idsat_samples(Idsat_nominal_nmos, Idsat_nominal_pmos, variation_tt, variation_tt, num_samples)
+idsat_nmos_sf, idsat_pmos_sf = generate_idsat_samples(Idsat_nominal_nmos, Idsat_nominal_pmos, variation_sf_nmos, variation_sf_pmos, num_samples)
+idsat_nmos_fs, idsat_pmos_fs = generate_idsat_samples(Idsat_nominal_nmos, Idsat_nominal_pmos, variation_fs_nmos, variation_fs_pmos, num_samples)
+
+# 各コーナーでの nMOS と pMOS の Idsat の相関を計算
+def calculate_correlation(nmos_idsat, pmos_idsat):
+    correlation_matrix = np.corrcoef(nmos_idsat, pmos_idsat)
+    return correlation_matrix[0, 1]  # 相関係数
+
+correlation_ff = calculate_correlation(idsat_nmos_ff, idsat_pmos_ff)
+correlation_ss = calculate_correlation(idsat_nmos_ss, idsat_pmos_ss)
+correlation_tt = calculate_correlation(idsat_nmos_tt, idsat_pmos_tt)
+correlation_sf = calculate_correlation(idsat_nmos_sf, idsat_pmos_sf)
+correlation_fs = calculate_correlation(idsat_nmos_fs, idsat_pmos_fs)
+
+# 結果の表示
+print(f"Correlation (FF) = {correlation_ff:.3f}")
+print(f"Correlation (SS) = {correlation_ss:.3f}")
+print(f"Correlation (TT) = {correlation_tt:.3f}")
+print(f"Correlation (SF) = {correlation_sf:.3f}")
+print(f"Correlation (FS) = {correlation_fs:.3f}")
+
+# Idsat 分布の可視化
+plt.figure(figsize=(12, 8))
+
+# FF
+plt.subplot(3, 2, 1)
+plt.scatter(idsat_nmos_ff, idsat_pmos_ff, alpha=0.5, color='blue')
+plt.title('FF: Fast-Fast')
+plt.xlabel('nMOS Idsat (uA)')
+plt.ylabel('pMOS Idsat (uA)')
+
+# SS
+plt.subplot(3, 2, 2)
+plt.scatter(idsat_nmos_ss, idsat_pmos_ss, alpha=0.5, color='green')
+plt.title('SS: Slow-Slow')
+plt.xlabel('nMOS Idsat (uA)')
+plt.ylabel('pMOS Idsat (uA)')
+
+# TT
+plt.subplot(3, 2, 3)
+plt.scatter(idsat_nmos_tt, idsat_pmos_tt, alpha=0.5, color='red')
+plt.title('TT: Typical-Typical')
+plt.xlabel('nMOS Idsat (uA)')
+plt.ylabel('pMOS Idsat (uA)')
+
+# SF
+plt.subplot(3, 2, 4)
+plt.scatter(idsat_nmos_sf, idsat_pmos_sf, alpha=0.5, color='purple')
+plt.title('SF: Slow-Fast')
+plt.xlabel('nMOS Idsat (uA)')
+plt.ylabel('pMOS Idsat (uA)')
+
+# FS
+plt.subplot(3, 2, 5)
+plt.scatter(idsat_nmos_fs, idsat_pmos_fs, alpha=0.5, color='orange')
+plt.title('FS: Fast-Slow')
+plt.xlabel('nMOS Idsat (uA)')
+plt.ylabel('pMOS Idsat (uA)')
+
+plt.tight_layout()
+plt.show()
