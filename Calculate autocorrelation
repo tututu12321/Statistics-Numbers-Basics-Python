@@ -1,0 +1,32 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from statsmodels.tsa.stattools import acf
+
+# ====== シミュレーションデータの生成 / Simulate temperature data ======
+# Simulate 3 days of hourly temperature data with a daily cycle
+np.random.seed(42)
+hours = np.arange(0, 72, 1)  # 3 days, 24 hours each (72 hours total)
+daily_cycle = 10 * np.cos(2 * np.pi * hours / 24)  # Daily temperature cycle (24-hour periodicity)
+noise = np.random.normal(0, 2, len(hours))  # Add some noise to the data
+temperature_data = 25 + daily_cycle + noise  # Combine cycle and noise
+
+# ====== 自己相関の計算 / Calculate autocorrelation ======
+# Calculate autocorrelation for up to 48-hour lag
+lags = 48  # Maximum lag (in hours) for autocorrelation
+autocorr_values = acf(temperature_data, nlags=lags)
+
+# ====== コレログラムのプロット / Plot the correlogram ======
+plt.figure(figsize=(10, 6))
+plt.bar(range(lags+1), autocorr_values, width=0.4, color='blue')
+plt.title("Correlogram (Autocorrelation of Temperature Data)")
+plt.xlabel("Lag (hours)")
+plt.ylabel("Autocorrelation")
+plt.grid(True)
+plt.tight_layout()
+
+# グラフの表示 / Show the plot
+plt.show()
+
+# ====== 自己相関の結果の表示 / Display autocorrelation values ======
+for i, autocorr in enumerate(autocorr_values):
+    print(f"Lag {i}: Autocorrelation = {autocorr:.3f}")
