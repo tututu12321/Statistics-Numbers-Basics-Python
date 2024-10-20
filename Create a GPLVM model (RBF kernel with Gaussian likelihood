@@ -1,0 +1,27 @@
+import GPy
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 観測データを用意する（例として、2次元ガウス分布からのサンプル）
+# Prepare observed data (e.g., samples from a 2D Gaussian distribution)
+Y = np.random.randn(20, 5)  # 20サンプル、5次元データ / 20 samples, 5-dimensional data
+
+# 次元削減: 5次元から2次元へ
+# Dimensionality reduction: from 5D to 2D
+latent_dim = 2
+
+# RBFカーネルとガウス尤度を使用してGPLVMモデルを作成
+# Create a GPLVM model (RBF kernel with Gaussian likelihood)
+model = GPy.models.GPLVM(Y, input_dim=latent_dim, kernel=GPy.kern.RBF(latent_dim))
+
+# モデルの最適化を実行
+# Optimize the model
+model.optimize(messages=True)
+
+# 潜在空間をプロット
+# Plot the latent space
+model.plot_latent(labels=np.arange(Y.shape[0]))
+
+# カーネルとデータフィットの結果をプロット
+# Plot the resulting kernel and data fit
+plt.show()
