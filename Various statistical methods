@@ -1,0 +1,81 @@
+import numpy as np
+import pandas as pd
+from scipy.stats import mannwhitneyu, fisher_exact, chi2_contingency, pearsonr
+from statsmodels.stats.anova import AnovaRM
+from lifelines.statistics import logrank_test
+from lifelines import CoxPHFitter
+
+# ====== 1. Mann-Whitney U Test (マンホイットニーのU検定) ======
+print("=== Mann-Whitney U Test ===")
+# Generate two independent groups (e.g., treatment vs. control)
+np.random.seed(42)
+group1 = np.random.normal(loc=5, scale=2, size=30)
+group2 = np.random.normal(loc=6, scale=2, size=30)
+
+# Perform Mann-Whitney U Test
+u_statistic, p_value_mannwhitney = mannwhitneyu(group1, group2)
+print(f"U-statistic = {u_statistic}, p-value = {p_value_mannwhitney:.3f}\n")
+
+# ====== 2. Fisher's Exact Test (フィッシャーの正確検定) and Chi-Square Test (カイ2乗検定) ======
+print("=== Fisher's Exact Test and Chi-Square Test ===")
+# Create a 2x2 contingency table
+contingency_table = np.array([[10, 20], [20, 30]])
+
+# Fisher's Exact Test
+odds_ratio, p_value_fisher = fisher_exact(contingency_table)
+print(f"Fisher's Exact Test: Odds ratio = {odds_ratio}, p-value = {p_value_fisher:.3f}")
+
+# Chi-Square Test
+chi2_stat, p_value_chi2, _, _ = chi2_contingency(contingency_table)
+print(f"Chi-Square Test: Chi2 statistic = {chi2_stat}, p-value = {p_value_chi2:.3f}\n")
+
+# ====== 3. Repeated Measures ANOVA (反復測定分散分析) ======
+print("=== Repeated Measures ANOVA ===")
+# Simulate repeated measures data (e.g., measurements over time)
+data = pd.DataFrame({
+    'subject': np.repeat(np.arange(1, 11), 3),
+    'time': np.tile([1, 2, 3], 10),
+    'score': np.random.normal(loc=5, scale=2, size=30)
+})
+
+# Perform Repeated Measures ANOVA
+aovrm = AnovaRM(data, 'score', 'subject', within=['time'])
+anova_results = aovrm.fit()
+print(f"{anova_results}\n")
+
+# ====== 4. Pearson’s Correlation Coefficient (ピアソンの積率相関係数) ======
+print("=== Pearson’s Correlation Coefficient ===")
+# Generate two correlated variables
+x = np.random.normal(0, 1, 100)
+y = 0.5 * x + np.random.normal(0, 1, 100)
+
+# Calculate Pearson’s correlation
+corr_coef, p_value_pearson = pearsonr(x, y)
+print(f"r = {corr_coef:.3f}, p-value = {p_value_pearson:.3f}\n")
+
+# ====== 5. Log-Rank Test (ログランク検定) ======
+print("=== Log-Rank Test ===")
+# Simulate survival data
+durations_group1 = np.random.exponential(10, size=50)
+durations_group2 = np.random.exponential(12, size=50)
+event_observed_group1 = np.random.binomial(1, 0.9, size=50)
+event_observed_group2 = np.random.binomial(1, 0.8, size=50)
+
+# Perform Log-Rank Test
+logrank_result = logrank_test(durations_group1, durations_group2, event_observed_group1, event_observed_group2)
+print(f"Log-Rank Test: p-value = {logrank_result.p_value:.3f}\n")
+
+# ====== 6. Cox Proportional Hazards Regression (Cox比例ハザード回帰) ======
+print("=== Cox Proportional Hazards Regression ===")
+# Simulate data for Cox regression
+df_cox = pd.DataFrame({
+    'duration': np.concatenate([durations_group1, durations_group2]),
+    'event': np.concatenate([event_observed_group1, event_observed_group2]),
+    'group': np.concatenate([np.zeros(50), np.ones(50)])  # 0 for group1, 1 for group2
+})
+
+# Perform Cox Proportional Hazards Regression
+cph = CoxPHFitter()
+cph.fit(df_cox, duration_col='duration', event_col='event')
+print("Cox Proportional Hazards Regression results:\n")
+cph.print_summary()
