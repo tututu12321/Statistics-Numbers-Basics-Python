@@ -1,0 +1,58 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import scipy.stats as stats
+
+# ====== Simulation Parameters ======
+num_samples = 1000  # Number of Monte Carlo simulations
+resistor_nominal = 1e3  # Nominal resistance 1kΩ
+current = 1e-3  # Constant current 1mA
+
+# ====== mc(x, y) Uniform Distribution ======
+# Simulate resistor values using uniform distribution (mc function)
+resistor_values_mc = resistor_nominal * (1 + np.random.uniform(-0.05, 0.05, num_samples))  # 5% tolerance
+
+# Voltage across the resistor for mc(x, y)
+voltages_mc = resistor_values_mc * current
+
+# ====== gauss(x) Normal Distribution ======
+# Simulate resistor values using Gaussian distribution (gauss function)
+sigma = resistor_nominal * 0.05 / 2  # 2σ = 5%, so σ = 2.5%
+resistor_values_gauss = np.random.normal(resistor_nominal, sigma, num_samples)
+
+# Voltage across the resistor for gauss(x)
+voltages_gauss = resistor_values_gauss * current
+
+# ====== Plot Results ======
+plt.figure(figsize=(12, 6))
+
+# Plotting uniform distribution (mc)
+plt.subplot(1, 2, 1)
+plt.hist(voltages_mc, bins=30, color='blue', alpha=0.7)
+plt.title('Uniform Distribution (mc Function)')
+plt.xlabel('Voltage (V)')
+plt.ylabel('Frequency')
+plt.grid(True)
+
+# Plotting Gaussian distribution (gauss)
+plt.subplot(1, 2, 2)
+plt.hist(voltages_gauss, bins=30, color='red', alpha=0.7)
+plt.title('Gaussian Distribution (gauss Function)')
+plt.xlabel('Voltage (V)')
+plt.ylabel('Frequency')
+plt.grid(True)
+
+plt.tight_layout()
+plt.show()
+
+# ====== Calculate Statistics ======
+mean_mc = np.mean(voltages_mc)
+std_mc = np.std(voltages_mc)
+mean_gauss = np.mean(voltages_gauss)
+std_gauss = np.std(voltages_gauss)
+
+print(f"Uniform Distribution (mc) -> Mean: {mean_mc:.3f} V, Std Dev: {std_mc:.3f} V")
+print(f"Gaussian Distribution (gauss) -> Mean: {mean_gauss:.3f} V, Std Dev: {std_gauss:.3f} V")
+
+# Confidence interval for Gaussian distribution (95% CI)
+conf_interval_gauss = stats.norm.interval(0.95, loc=mean_gauss, scale=std_gauss / np.sqrt(num_samples))
+print(f"95% Confidence Interval for Gaussian Distribution: {conf_interval_gauss[0]:.3f} V to {conf_interval_gauss[1]:.3f} V")
