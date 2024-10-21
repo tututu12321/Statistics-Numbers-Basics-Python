@@ -1,0 +1,25 @@
+import numpy as np
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+
+# データの生成（ランダムに介入群と対照群を割り当てる）
+np.random.seed(42)
+n = 1000
+treatment = np.random.binomial(1, 0.5, size=n)  # 介入群（1）と対照群（0）の割り当て
+effect = 5  # 介入による効果
+error = np.random.normal(0, 1, size=n)  # 誤差
+outcome = 10 + treatment * effect + error  # 介入の有無によってアウトカムが変わる
+
+# データフレームとして格納
+df = pd.DataFrame({
+    'treatment': treatment,
+    'outcome': outcome
+})
+
+# 回帰分析で効果を推定
+model = LinearRegression()
+model.fit(df[['treatment']], df['outcome'])
+
+# 介入効果の推定
+treatment_effect = model.coef_[0]
+print(f"Estimated Treatment Effect: {treatment_effect:.4f}")
