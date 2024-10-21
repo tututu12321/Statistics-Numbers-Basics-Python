@@ -1,0 +1,31 @@
+import numpy as np
+from scipy.stats import multinomial
+
+# 多項分布のパラメータ設定
+n = 5  # 試行回数
+p = [0.2, 0.3, 0.5]  # グー、チョキ、パーのそれぞれの確率
+x = [2, 2, 1]  # グーが2回、チョキが2回、パーが1回出る回数
+
+# 1. 確率の計算（多項分布のPMF）
+prob = multinomial.pmf(x, n, p)
+print(f"グーが2回、チョキが2回、パーが1回出る確率: {prob:.5f}")
+
+# 2. 期待値の計算
+expected_value = np.array(p) * n
+print(f"期待値 (グー, チョキ, パー): {expected_value}")
+
+# 3. 分散の計算
+variance = n * np.array(p) * (1 - np.array(p))
+print(f"分散 (グー, チョキ, パー): {variance}")
+
+# 4. 共分散の計算
+# 共分散行列を計算する
+covariance_matrix = np.zeros((3, 3))
+for i in range(3):
+    for j in range(3):
+        if i == j:
+            covariance_matrix[i, j] = variance[i]
+        else:
+            covariance_matrix[i, j] = -n * p[i] * p[j]
+
+print(f"共分散行列:\n{covariance_matrix}")
