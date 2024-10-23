@@ -1,0 +1,67 @@
+# 福引きの賞金と期待値を計算する関数
+def calculate_lottery_expectation(prizes, probabilities):
+    expectation = sum([p * prob for p, prob in zip(prizes, probabilities)])
+    return expectation
+
+# 単利法による利息計算の関数
+def simple_interest(principal, rate, time):
+    return principal * rate * time
+
+# 複利法による利息計算の関数
+def compound_interest(principal, rate, time, n):
+    return principal * (1 + rate / n) ** (n * time)
+
+# ローンの返済額を計算する関数（等額返済法）
+def loan_repayment(principal, rate, time):
+    monthly_rate = rate / 12  # 年利を月利に変換
+    months = time * 12  # 返済期間を月単位に変換
+    payment = (principal * monthly_rate) / (1 - (1 + monthly_rate) ** -months)
+    return payment
+
+def main():
+    print("機能を選んでください:")
+    print("1: 福引きの賞金と期待値の計算")
+    print("2: 単利法による利息計算")
+    print("3: 複利法による利息計算")
+    print("4: ローンの返済額の計算")
+
+    choice = int(input("選択肢: "))
+
+    if choice == 1:
+        # 福引きの賞金と期待値の計算（例）
+        prizes = [1000, 500, 100, 10]  # 賞金のリスト
+        probabilities = [0.01, 0.05, 0.2, 0.74]  # それぞれの賞金に対応する当選確率
+        expectation = calculate_lottery_expectation(prizes, probabilities)
+        print(f"福引きの期待値: {expectation:.2f} 円")
+
+    elif choice == 2:
+        # 単利法による利息計算（例）
+        principal = 10000  # 元金
+        rate = 0.05  # 年利率 (5%)
+        time = 3  # 期間 (年)
+        interest = simple_interest(principal, rate, time)
+        print(f"単利による利息: {interest:.2f} 円")
+        print(f"総額: {principal + interest:.2f} 円")
+
+    elif choice == 3:
+        # 複利法による利息計算（例）
+        principal = 10000  # 元金
+        rate = 0.05  # 年利率 (5%)
+        time = 3  # 期間 (年)
+        n = 4  # 年に4回利息が付く（四半期ごと）
+        total = compound_interest(principal, rate, time, n)
+        print(f"複利による総額: {total:.2f} 円")
+
+    elif choice == 4:
+        # ローンの返済額の計算（例）
+        principal = 300000  # ローンの元金
+        rate = 0.04  # 年利率 (4%)
+        time = 15  # 返済期間 (15年)
+        monthly_payment = loan_repayment(principal, rate, time)
+        print(f"毎月の返済額: {monthly_payment:.2f} 円")
+
+    else:
+        print("無効な選択肢です。")
+
+if __name__ == "__main__":
+    main()
