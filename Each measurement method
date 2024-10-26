@@ -1,0 +1,72 @@
+import numpy as np
+
+# 1.3.1 直接測定と間接測定
+# 直接測定の例：長さの測定
+length = 5.0  # 直接測定した長さ（単位：メートル）
+
+# 間接測定の例：長さから面積を計算
+def calculate_area(length):
+    return length ** 2
+
+area = calculate_area(length)
+
+# 1.3.2 基本測定法，定義測定法と比較測定
+# 基本測定法の例：温度の測定
+temperature = 25.0  # 温度（単位：摂氏）
+
+# 定義測定法の例：標準単位を用いた時間の定義（例：原子時計）
+def define_time(seconds):
+    return f"{seconds} 秒 (原子時計による定義)"
+
+defined_time = define_time(60)
+
+# 比較測定の例：2つの物体の長さを比較
+object_length = 10.0  # 測定した長さ（単位：センチメートル）
+standard_length = 10.2  # 基準長さ（単位：センチメートル）
+comparison_result = "長い" if object_length > standard_length else "短い"
+
+# 1.3.3 偏位法と零位法
+# 偏位法の例：変位の測定
+initial_position = 0.0
+final_position = 5.0  # 変位（単位：ミリメートル）
+displacement = final_position - initial_position
+
+# 零位法の例：2つの重さのバランスをとる
+weight_1 = 10.0  # 重さ（単位：グラム）
+weight_2 = 10.0  # 別の重さ（単位：グラム）
+null_result = "平衡" if weight_1 == weight_2 else "不平衡"
+
+# 1.3.4 補償法と差動法
+# 補償法の例：ブリッジ回路を使用して電圧をバランスさせる
+def bridge_balance(voltage_1, voltage_2):
+    return "バランスしている" if voltage_1 == voltage_2 else "バランスしていない"
+
+voltage_1 = 5.0  # 測定した電圧（単位：ボルト）
+voltage_2 = 5.0  # 補償用電圧（単位：ボルト）
+compensation_result = bridge_balance(voltage_1, voltage_2)
+
+# 差動法の例：2つの電圧の差を測定
+def differential_measure(voltage_a, voltage_b):
+    return abs(voltage_a - voltage_b)
+
+voltage_a = 5.0  # 電圧A（単位：ボルト）
+voltage_b = 4.8  # 電圧B（単位：ボルト）
+differential = differential_measure(voltage_a, voltage_b)
+
+# 結果を表示
+print("1.3.1 直接測定と間接測定")
+print(f"直接測定 - 長さ: {length} メートル")
+print(f"間接測定 - 面積: {area} 平方メートル\n")
+
+print("1.3.2 基本測定法，定義測定法と比較測定")
+print(f"基本測定法 - 温度: {temperature} ℃")
+print(f"定義測定法 - 時間: {defined_time}")
+print(f"比較測定 - オブジェクトは基準よりも{comparison_result}\n")
+
+print("1.3.3 偏位法と零位法")
+print(f"偏位法 - 変位: {displacement} mm")
+print(f"零位法 - 重さは{null_result}\n")
+
+print("1.3.4 補償法と差動法")
+print(f"補償法 - ブリッジは{compensation_result}")
+print(f"差動法 - 電圧差: {differential} ボルト")
