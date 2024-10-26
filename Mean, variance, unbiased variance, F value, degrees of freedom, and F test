@@ -1,0 +1,57 @@
+import numpy as np
+from scipy import stats
+
+# データセットの定義
+data_A = [0.0358, 0.0364, 0.0368, 0.0365, 0.0365, 0.0373, 0.0364, 0.0362]
+data_B = [0.0363, 0.0362, 0.0358, 0.0359, 0.0364, 0.0360, 0.0360, 0.0362, 0.0363]
+
+# 平均の計算
+mean_A = np.mean(data_A)
+mean_B = np.mean(data_B)
+
+# 不偏分散の計算
+var_A = np.var(data_A, ddof=1)  # Aの不偏分散
+var_B = np.var(data_B, ddof=1)  # Bの不偏分散
+
+# 自由度
+df_A = len(data_A) - 1  # 自由度A
+df_B = len(data_B) - 1  # 自由度B
+
+# F値の計算
+if var_A >= var_B:
+    F0 = var_A / var_B
+    df_numerator = df_A
+    df_denominator = df_B
+else:
+    F0 = var_B / var_A
+    df_numerator = df_B
+    df_denominator = df_A
+
+# F検定のp値の計算（片側検定）
+p_value = 1 - stats.f.cdf(F0, df_numerator, df_denominator)
+
+# 有意水準5%でのF臨界値の取得
+alpha = 0.05
+F_critical = stats.f.ppf(1 - alpha, df_numerator, df_denominator)
+
+# 結果の表示
+print("平均:")
+print(f"Mean of A: {mean_A}")
+print(f"Mean of B: {mean_B}\n")
+
+print("不偏分散:")
+print(f"Variance of A (V1): {var_A}")
+print(f"Variance of B (V2): {var_B}\n")
+
+print("F値と自由度:")
+print(f"F0: {F0}")
+print(f"Degrees of Freedom (df_numerator, df_denominator): ({df_numerator}, {df_denominator})\n")
+
+print("F検定結果:")
+print(f"F_critical (alpha=0.05): {F_critical}")
+print(f"p-value: {p_value}")
+
+if F0 >= F_critical:
+    print("結論: 仮説H0は棄却される。分散に差があるといえる。")
+else:
+    print("結論: 仮説H0は棄却されない。分散に差がないといえる。")
