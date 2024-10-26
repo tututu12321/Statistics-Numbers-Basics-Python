@@ -1,0 +1,54 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Function to calculate indication accuracy
+def calculate_indication_accuracy(L, a=1.7, b=3):
+    """
+    Function to calculate indication accuracy.
+    L: Measurement length (mm)
+    a: Constant term (e.g., 1.7 μm)
+    b: Coefficient (e.g., 3)
+    """
+    return a + b * L / 1000
+
+# Example 1: Measuring a length of 50 mm
+L1 = 50
+accuracy1 = calculate_indication_accuracy(L1)
+
+# Example 2: Measuring a length of 500 mm
+L2 = 500
+accuracy2 = calculate_indication_accuracy(L2)
+
+# Example 3: Comparison for a measurement length of 1,000 mm
+L3 = 1000
+accuracy3_case1 = calculate_indication_accuracy(L3, a=1.7, b=3)  # 1.7 + 3L/1000
+accuracy3_case2 = calculate_indication_accuracy(L3, a=0.7, b=5)  # 0.7 + 5L/1000
+
+print("Example 1: Indication accuracy for measuring 50 mm")
+print(f"Indication accuracy = 1.7 + 3 * {L1} / 1000 = {accuracy1} μm\n")
+
+print("Example 2: Indication accuracy for measuring 500 mm")
+print(f"Indication accuracy = 1.7 + 3 * {L2} / 1000 = {accuracy2} μm\n")
+
+print("Example 3: Comparison of indication accuracy for measuring 1,000 mm")
+print(f"Case 1 (1.7 + 3L/1000): Indication accuracy = {accuracy3_case1} μm")
+print(f"Case 2 (0.7 + 5L/1000): Indication accuracy = {accuracy3_case2} μm\n")
+
+# Visualization with a graph
+# Measurement length range (0 to 1000 mm)
+lengths = np.linspace(0, 1000, 100)
+
+# Calculate indication accuracy
+accuracy_case1 = calculate_indication_accuracy(lengths, a=1.7, b=3)
+accuracy_case2 = calculate_indication_accuracy(lengths, a=0.7, b=5)
+
+# Plot
+plt.figure(figsize=(8, 4))
+plt.plot(lengths, accuracy_case1, label='1.7 + 3L/1000', linestyle='--', color='blue')
+plt.plot(lengths, accuracy_case2, label='0.7 + 5L/1000', linestyle='--', color='red')
+plt.xlabel('Measurement Length (mm)')
+plt.ylabel('Indication Accuracy (μm)')
+plt.title('Comparison of Indication Accuracy vs. Measurement Length')
+plt.grid(True)
+plt.legend()
+plt.show()
