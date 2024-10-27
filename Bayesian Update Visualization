@@ -1,0 +1,37 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Define parameters
+prior = 0.01  # Prior probability (e.g., prevalence of a disease)
+sensitivity = 0.9  # Probability of a positive test result given the disease is present (True Positive Rate)
+specificity = 0.8  # Probability of a negative test result given the disease is not present (True Negative Rate)
+
+# Calculate the likelihood and the evidence
+def bayesian_update(prior, sensitivity, specificity):
+    # Likelihood of a positive result given disease (sensitivity)
+    # Likelihood of a positive result given no disease (1 - specificity)
+    p_pos_given_disease = sensitivity
+    p_pos_given_no_disease = 1 - specificity
+
+    # Calculate the evidence (total probability of a positive test)
+    evidence = prior * p_pos_given_disease + (1 - prior) * p_pos_given_no_disease
+
+    # Calculate the posterior probability using Bayes' theorem
+    posterior = (p_pos_given_disease * prior) / evidence
+    return posterior
+
+# Simulate a range of prior probabilities (e.g., different assumptions about disease prevalence)
+prior_range = np.linspace(0.001, 0.1, 100)
+posterior_probs = [bayesian_update(p, sensitivity, specificity) for p in prior_range]
+
+# Plot the prior probabilities and their corresponding posterior probabilities
+plt.figure(figsize=(10, 6))
+plt.plot(prior_range, posterior_probs, label='Posterior Probability', color='blue')
+plt.axhline(y=0.5, color='red', linestyle='--', label='Threshold: 0.5')
+plt.title('Bayesian Update: Probability of Disease Given a Positive Test')
+plt.xlabel('Prior Probability (Prevalence)')
+plt.ylabel('Posterior Probability')
+plt.grid(True)
+plt.legend(loc='upper left')
+plt.tight_layout()
+plt.show()
