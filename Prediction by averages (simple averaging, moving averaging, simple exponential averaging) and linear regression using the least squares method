@@ -1,0 +1,82 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# --- 1. Simple Average Method ---
+# 過去のデータ
+data = [2.450, 2.615, 3.276, 3.294, 3.778, 4.009, 3.920, 4.267, 4.805, 5.656]
+
+# 単純平均法による予測
+D = np.mean(data)
+print(f"Prediction using Simple Average: {D:.3f}")
+
+# --- 2. Moving Average Method ---
+# 移動平均法（ウィンドウサイズが3の例）
+def moving_average(data, window_size=3):
+    return [np.mean(data[i:i+window_size]) for i in range(len(data) - window_size + 1)]
+
+# 移動平均法による予測
+ma_data = moving_average(data)
+print("Prediction using Moving Average:", ma_data)
+
+# --- 3. Exponential Smoothing Method ---
+# αを用いた簡易指数平均法
+def exponential_smoothing(data, alpha=0.3):
+    D = data[0]  # 初期予測値
+    smoothed_data = [D]
+    for d in data[1:]:
+        D = alpha * d + (1 - alpha) * D
+        smoothed_data.append(D)
+    return smoothed_data
+
+# 簡易指数平均法による予測
+smoothed_data = exponential_smoothing(data)
+print("Prediction using Exponential Smoothing:", smoothed_data)
+
+# --- 4. Least Squares Method for Linear Regression ---
+# 線形回帰用のデータ
+x = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+y = np.array([2.450, 2.615, 3.276, 3.294, 3.778, 4.009, 3.920, 4.267, 4.805, 5.656])
+
+# 最小二乗法による直線のあてはめ
+A = np.vstack([x, np.ones(len(x))]).T
+a, b = np.linalg.lstsq(A, y, rcond=None)[0]
+
+print(f"Linear Regression: y = {a:.6f}x + {b:.6f}")
+
+# データとフィットした直線のプロット
+plt.figure(figsize=(10, 6))
+plt.scatter(x, y, label='Data points', color='blue')
+plt.plot(x, a * x + b, 'r', label=f'Fitted line: y = {a:.3f}x + {b:.3f}', linewidth=2)
+plt.xlabel('x')
+plt.ylabel('y')
+plt.title('Linear Regression with Least Squares Method')
+plt.grid(True)
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+# --- 5. Least Squares Method for Quadratic Regression ---
+# 2次回帰用のデータ
+x2 = np.array([10, 15, 20, 26, 32, 40])
+y2 = np.array([28.2, 47.0, 44.4, 32.8, 20.8, 0.8])
+
+# 2次曲線フィッティング用の行列Aの作成
+A2 = np.vstack([x2**2, x2, np.ones(len(x2))]).T
+a2, b2, c2 = np.linalg.lstsq(A2, y2, rcond=None)[0]
+
+print(f"Quadratic Regression: y = {a2:.6f}x^2 + {b2:.6f}x + {c2:.6f}")
+
+# データとフィットした2次曲線のプロット
+x_range = np.linspace(min(x2), max(x2), 100)
+y_fit = a2 * x_range**2 + b2 * x_range + c2
+
+plt.figure(figsize=(10, 6))
+plt.scatter(x2, y2, label='Data points', color='blue')
+plt.plot(x_range, y_fit, 'r', label=f'Fitted curve: y = {a2:.3f}x^2 + {b2:.3f}x + {c2:.3f}', linewidth=2)
+plt.xlabel('x')
+plt.ylabel('y')
+plt.title('Quadratic Regression with Least Squares Method')
+plt.grid(True)
+plt.legend()
+plt.tight_layout()
+plt.show()
