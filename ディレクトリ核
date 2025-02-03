@@ -1,0 +1,27 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Define the Dirichlet Kernel function
+def dirichlet_kernel(N, x):
+    return np.sin((2*N + 1) * x / 2) / np.sin(x / 2)
+
+# Define the range for x
+x = np.linspace(-np.pi, np.pi, 1000)
+
+# Plot Dirichlet Kernel for different values of N
+plt.figure(figsize=(10, 6))
+
+for N in [1, 5, 10, 20]:
+    y = dirichlet_kernel(N, x)
+    plt.plot(x, y, label=f'N = {N}')
+
+# Labeling the plot
+plt.xlabel('x', fontsize=12)
+plt.ylabel('Dirichlet Kernel $D_N(x)$', fontsize=12)
+plt.title('Dirichlet Kernel for Different N Values', fontsize=14)
+plt.legend(loc='best')
+plt.grid(True)
+
+# Show the plot
+plt.tight_layout()
+plt.show()
